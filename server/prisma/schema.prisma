@@ -1,0 +1,185 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum ScanStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+enum RiskLevel {
+  HIGH
+  MEDIUM
+  LOW
+  GOOD
+}
+
+enum ScanCategory {
+  PRIVACY_POLICY
+  COOKIES
+  FORMS
+  RIGHTS
+  CONTROLLER
+  SECURITY
+  LANGUAGE
+}
+
+enum FindingStatus {
+  FOUND
+  PARTIAL
+  ABSENT
+}
+
+enum CriterionRisk {
+  HIGH
+  MEDIUM
+  LOW
+  INFO
+}
+
+enum Priority {
+  HIGH
+  MEDIUM
+  LOW
+}
+
+enum CookieType {
+  NECESSARY
+  ANALYTICS
+  FUNCTIONAL
+  MARKETING
+}
+
+enum CookieOrigin {
+  FIRST_PARTY
+  THIRD_PARTY
+}
+
+enum CookieDuration {
+  SESSION
+  PERSISTENT
+}
+
+model Scan {
+  id           String     @id @default(uuid())
+  url          String
+  status       ScanStatus @default(PENDING)
+  score        Float?
+  riskLevel    RiskLevel?
+  startedAt    DateTime   @default(now())
+  completedAt  DateTime?
+  errorMessage String?
+  createdAt    DateTime   @default(now())
+
+  scanResults   ScanResult[]
+  cookieRecords CookieRecord[]
+  formRecords   FormRecord[]
+}
+
+model ScanResult {
+  id       String       @id @default(uuid())
+  scanId   String
+  category ScanCategory
+  score    Float
+  maxScore Float
+  summary  String
+  createdAt DateTime   @default(now())
+
+  scan    Scan      @relation(fields: [scanId], references: [id], onDelete: Cascade)
+  findings Finding[]
+
+  @@unique([scanId, category])
+}
+
+model Finding {
+  id              String        @id @default(uuid())
+  scanResultId    String
+  criterionId     String
+  status          FindingStatus
+  score           Float
+  evidence        String?
+  explanation     String
+  lgpdReference   String
+  createdAt       DateTime      @default(now())
+
+  scanResult      ScanResult      @relation(fields: [scanResultId], references: [id], onDelete: Cascade)
+  criterion       Criterion       @relation(fields: [criterionId], references: [id])
+  recommendations Recommendation[]
+}
+
+model Recommendation {
+  id           String   @id @default(uuid())
+  findingId    String
+  title        String
+  description  String
+  priority     Priority
+  howToImprove String
+  createdAt    DateTime @default(now())
+
+  finding Finding @relation(fields: [findingId], references: [id], onDelete: Cascade)
+}
+
+model Criterion {
+  id                      String        @id @default(uuid())
+  code                    String        @unique
+  category                ScanCategory
+  name                    String
+  description             String
+  expectedEvidence        String
+  riskIfAbsent            CriterionRisk
+  educationalExplanation  String
+  improvementSuggestion   String
+  weight                  Float
+  createdAt               DateTime      @default(now())
+
+  findings Finding[]
+}
+
+model GlossaryTerm {
+  id           String   @id @default(uuid())
+  term         String   @unique
+  definition   String
+  lgpdArticle  String?
+  relatedTerms String   @default("[]")
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model CookieRecord {
+  id                  String         @id @default(uuid())
+  scanId              String
+  name                String
+  domain              String
+  type                CookieType
+  origin              CookieOrigin
+  duration            CookieDuration
+  loadedBeforeConsent Boolean        @default(false)
+  source              String
+  description         String?
+  createdAt           DateTime       @default(now())
+
+  scan Scan @relation(fields: [scanId], references: [id], onDelete: Cascade)
+}
+
+model FormRecord {
+  id              String   @id @default(uuid())
+  scanId          String
+  pageUrl         String
+  action          String?
+  method          String   @default("GET")
+  fields          String
+  sensitiveFields String   @default("[]")
+  excessiveFields String   @default("[]")
+  hasSecureAction Boolean  @default(false)
+  privacyNotice   Boolean  @default(false)
+  createdAt       DateTime @default(now())
+
+  scan Scan @relation(fields: [scanId], references: [id], onDelete: Cascade)
+}
