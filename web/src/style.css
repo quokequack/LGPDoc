@@ -207,3 +207,25 @@
     scroll-behavior: auto !important;
   }
 }
+
+@media print {
+  html, body {
+    background: #fff !important;
+  }
+
+  header, footer, nav, .no-print {
+    display: none !important;
+  }
+
+  .sheet, .tarja {
+    box-shadow: none !important;
+  }
+
+  .sheet {
+    break-inside: avoid;
+  }
+
+  .print-break {
+    break-after: page;
+  }
+}

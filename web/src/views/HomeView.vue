@@ -65,12 +65,17 @@ const categories = [
     <!-- O que é analisado — espelha a coluna de artigos do resultado -->
     <section class="space-y-6">
       <header class="flex items-end justify-between gap-4 border-b border-border pb-3">
-        <h2 class="font-display text-xl font-bold">O que é analisado</h2>
+        <div class="space-y-1">
+          <h2 class="font-display text-xl font-bold">O que é analisado</h2>
+          <p class="max-w-2xl text-sm leading-relaxed text-muted-foreground">
+            As frentes abaixo aparecem depois no relatório e foram destacadas para que a leitura da análise fique mais direta.
+          </p>
+        </div>
         <span class="eyebrow">7 frentes · 33 critérios</span>
       </header>
-      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
-        <div v-for="cat in categories" :key="cat.title" class="sheet flex items-start gap-3.5 p-4">
-          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-sm bg-primary/8 text-primary">
+      <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div v-for="cat in categories" :key="cat.title" class="sheet flex items-start gap-4 border-l-4 border-primary p-5 transition-transform duration-150 hover:-translate-y-0.5">
+          <span class="grid h-11 w-11 shrink-0 place-items-center rounded-sm bg-primary/10 text-primary ring-1 ring-primary/10">
             <component :is="cat.icon" class="h-5 w-5" aria-hidden="true" />
           </span>
           <div class="min-w-0">

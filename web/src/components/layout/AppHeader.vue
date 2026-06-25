@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
 import { useTheme } from '@/composables/useTheme';
-import { Sun, Moon } from '@lucide/vue';
+import { ShieldCheck, Sun, Moon } from '@lucide/vue';
 import Button from '@/components/ui/Button.vue';
 
 const { isDark, toggle } = useTheme();
@@ -17,8 +17,8 @@ const nav = [
   <header class="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
     <div class="mx-auto flex min-h-16 max-w-laudo items-center justify-between gap-4 px-4 sm:px-6">
       <RouterLink to="/" class="group flex items-center gap-3 no-underline" aria-label="LGPDoc, página inicial">
-        <span class="grid h-9 w-9 place-items-center rounded-sm bg-primary font-serif text-xl leading-none text-accent shadow-sm transition-transform group-hover:-translate-y-0.5">
-          §
+        <span class="grid h-9 w-9 place-items-center rounded-sm border border-border bg-card text-primary shadow-sm transition-transform group-hover:-translate-y-0.5">
+          <ShieldCheck class="h-4 w-4" aria-hidden="true" />
         </span>
         <span class="flex flex-col leading-none">
           <span class="font-display text-lg font-extrabold tracking-tight text-foreground">LGPDoc</span>

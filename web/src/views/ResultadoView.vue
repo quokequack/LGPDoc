@@ -1,9 +1,11 @@
 <script setup lang="ts">
+import { Download } from '@lucide/vue';
 import ScoreGauge from '@/components/report/ScoreGauge.vue';
 import RiskBadge from '@/components/report/RiskBadge.vue';
 import CategorySummary from '@/components/report/CategorySummary.vue';
 import FindingCard from '@/components/report/FindingCard.vue';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer.vue';
+import Button from '@/components/ui/Button.vue';
 import Badge from '@/components/ui/Badge.vue';
 import { CATEGORY_LABELS, COOKIE_TYPE_LABELS } from '@/types/report.types';
 import { getMockReport } from '@/mock/reports';
@@ -26,12 +28,16 @@ function fmtDate(d: string) {
     day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
   });
 }
+
+function exportPdf() {
+  window.print();
+}
 </script>
 
 <template>
   <div class="grid gap-8 lg:grid-cols-[18rem_1fr]">
     <!-- Trilho do resultado: selo + índice de conformidade -->
-    <aside class="space-y-5 lg:sticky lg:top-20 lg:self-start">
+    <aside class="space-y-5 lg:sticky lg:top-20 lg:self-start no-print">
       <div class="sheet flex flex-col items-center gap-3 p-6">
         <ScoreGauge :score="report.scan.score" :risk-level="report.scan.riskLevel" size="lg" />
         <RiskBadge :risk-level="report.scan.riskLevel" />
@@ -45,13 +51,61 @@ function fmtDate(d: string) {
     <!-- Corpo do resultado -->
     <div class="space-y-10">
       <header class="space-y-2 border-b border-border pb-5">
-        <p class="eyebrow">Resultado demonstrativo · LGPD</p>
-        <h1 class="font-display text-3xl font-extrabold tracking-tight">{{ report.scan.siteName }}</h1>
-        <p class="prose-lei max-w-2xl text-sm leading-relaxed text-muted-foreground">{{ report.scan.siteSummary }}</p>
-        <a :href="report.scan.url" target="_blank" rel="noopener"
-           class="block break-all font-mono text-sm text-primary hover:underline">{{ report.scan.url }}</a>
-        <p class="font-mono text-xs text-muted-foreground">Emitido em {{ fmtDate(report.scan.completedAt) }}</p>
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div class="space-y-2">
+            <p class="eyebrow">Resultado demonstrativo · LGPD</p>
+            <h1 class="font-display text-3xl font-extrabold tracking-tight">{{ report.scan.siteName }}</h1>
+            <p class="prose-lei max-w-2xl text-sm leading-relaxed text-muted-foreground">{{ report.scan.siteSummary }}</p>
+            <a :href="report.scan.url" target="_blank" rel="noopener"
+               class="block break-all font-mono text-sm text-primary hover:underline">{{ report.scan.url }}</a>
+            <p class="font-mono text-xs text-muted-foreground">Emitido em {{ fmtDate(report.scan.completedAt) }}</p>
+          </div>
+          <Button class="no-print shrink-0" variant="outline" size="sm" @click="exportPdf">
+            <Download class="h-4 w-4" />
+            Exportar PDF
+          </Button>
+        </div>
       </header>
+
+      <section class="grid gap-4 lg:grid-cols-2">
+        <article class="sheet space-y-3 p-5">
+          <p class="eyebrow">Como a pontuação é calculada</p>
+          <h2 class="font-display text-lg font-bold">Soma dos critérios, normalizada para 100</h2>
+          <p class="prose-lei text-sm leading-relaxed text-muted-foreground">
+            Cada frente reúne critérios com peso próprio. Um critério encontrado soma a pontuação
+            total daquele item; quando está parcial, entra com parte do valor; quando está ausente,
+            soma zero. O total das frentes é então convertido para uma escala de 0 a 100.
+          </p>
+          <div class="grid gap-2 sm:grid-cols-3">
+            <div class="sheet border-border/70 bg-muted/35 p-3">
+              <p class="eyebrow">Encontrado</p>
+              <p class="mt-2 text-sm text-muted-foreground">Pontuação integral do critério.</p>
+            </div>
+            <div class="sheet border-border/70 bg-muted/35 p-3">
+              <p class="eyebrow">Parcial</p>
+              <p class="mt-2 text-sm text-muted-foreground">Cobertura incompleta, com ajuste proporcional.</p>
+            </div>
+            <div class="sheet border-border/70 bg-muted/35 p-3">
+              <p class="eyebrow">Ausente</p>
+              <p class="mt-2 text-sm text-muted-foreground">Sem evidência detectada na análise.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="sheet space-y-3 p-5">
+          <p class="eyebrow">Por que isso importa</p>
+          <h2 class="font-display text-lg font-bold">Conformidade reduz risco e aumenta confiança</h2>
+          <p class="prose-lei text-sm leading-relaxed text-muted-foreground">
+            Um site alinhado à LGPD deixa claro o que coleta, por que coleta e com quem compartilha.
+            Isso reduz risco jurídico, melhora governança e facilita a resposta a titulares e auditorias.
+          </p>
+          <p class="prose-lei text-sm leading-relaxed text-muted-foreground">
+            Na prática, a conformidade ajuda a evitar vazamentos de confiança: o visitante encontra
+            informação útil, os responsáveis sabem onde corrigir e a operação passa a trabalhar com
+            mais previsibilidade.
+          </p>
+        </article>
+      </section>
 
       <section class="sheet space-y-3 p-5">
         <div class="flex flex-wrap items-baseline justify-between gap-3">
@@ -69,7 +123,7 @@ function fmtDate(d: string) {
         </p>
       </section>
 
-      <LegalDisclaimer />
+      <LegalDisclaimer class="no-print" />
 
       <section v-for="cat in report.categories" :key="cat.category" :id="`cat-${cat.category}`" class="scroll-mt-20 space-y-4">
         <header class="space-y-1.5">
@@ -145,7 +199,6 @@ function fmtDate(d: string) {
         </div>
       </section>
 
-      <LegalDisclaimer />
     </div>
   </div>
 </template>
