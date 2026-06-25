@@ -1,28 +1,19 @@
+<script setup lang="ts">
+import { Info } from '@lucide/vue';
+</script>
+
 <template>
-  <aside class="legal-disclaimer" role="alert" aria-label="Aviso legal">
-    <p class="disclaimer-text">
-      <strong>ATENCAO:</strong> Esta ferramenta e um prototipo educacional. O relatorio gerado tem carater
-      exclusivamente didatico e informativo. Ele nao constitui parecer juridico, nao certifica conformidade com a LGPD
-      e nao substitui a consultoria de um profissional especializado em protecao de dados.
+  <aside
+    class="tarja flex items-start gap-3 rounded-sm border border-border bg-muted/50 px-4 py-3 text-sm"
+    role="note"
+    aria-label="Aviso legal"
+  >
+    <Info class="mt-0.5 h-4 w-4 shrink-0 text-risk-medium" aria-hidden="true" />
+    <p class="prose-lei leading-relaxed text-muted-foreground">
+      <span class="font-mono text-[0.65rem] font-semibold uppercase tracking-[0.12em] text-risk-medium">Documento didático ·</span>
+      Este laudo tem caráter exclusivamente educativo. Não constitui parecer jurídico, não
+      certifica conformidade com a LGPD e não substitui a avaliação de um profissional
+      especializado em proteção de dados.
     </p>
   </aside>
 </template>
-
-<style scoped>
-.legal-disclaimer {
-  background: #fef7e0;
-  border: 1px solid #fbbc04;
-  border-radius: var(--radius-sm);
-  padding: 12px 16px;
-}
-
-.disclaimer-text {
-  color: #5f4b00;
-  font-size: 0.82rem;
-  line-height: 1.5;
-}
-
-.disclaimer-text strong {
-  color: #d93025;
-}
-</style>

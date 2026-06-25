@@ -6,88 +6,113 @@ import RiskBadge from '@/components/report/RiskBadge.vue';
 import CategorySummary from '@/components/report/CategorySummary.vue';
 import FindingCard from '@/components/report/FindingCard.vue';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer.vue';
-import { CATEGORY_LABELS } from '@/types/report.types';
+import Badge from '@/components/ui/Badge.vue';
+import Skeleton from '@/components/ui/Skeleton.vue';
 import type { RiskLevel } from '@/types/scan.types';
+import { CATEGORY_LABELS, COOKIE_TYPE_LABELS } from '@/types/report.types';
 
 const route = useRoute();
 const scanId = route.params.id as string;
 const { report, isLoading, error } = useReport(scanId);
+
+const CATEGORY_ARTICLE: Record<string, string> = {
+  privacy_policy: 'Art. 6º · 9º',
+  cookies: 'Art. 7º · 8º',
+  forms: 'Art. 5º · 11',
+  rights: 'Art. 18',
+  controller: 'Art. 5º · 41',
+  security: 'Art. 46',
+  language: 'Art. 6º VI',
+};
+
+function fmtDate(d: string) {
+  return new Date(d).toLocaleDateString('pt-BR', {
+    day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
+}
 </script>
 
 <template>
-  <div class="report-view">
-    <div v-if="isLoading" class="loading">Carregando relatorio...</div>
+  <!-- Carregando -->
+  <div v-if="isLoading" class="grid gap-8 lg:grid-cols-[18rem_1fr]">
+    <div class="space-y-4">
+      <Skeleton class="mx-auto h-44 w-44 rounded-full" />
+      <Skeleton class="h-40 w-full" />
+    </div>
+    <div class="space-y-4">
+      <Skeleton class="h-10 w-72" />
+      <Skeleton v-for="i in 5" :key="i" class="h-32 w-full" />
+    </div>
+  </div>
 
-    <div v-else-if="error" class="error">{{ error }}</div>
+  <div v-else-if="error" class="py-16 text-center text-risk-high">{{ error }}</div>
 
-    <template v-else-if="report">
-      <!-- Header -->
-      <section class="report-header">
-        <h1>Relatorio de Analise</h1>
-        <a :href="report.scan.url" target="_blank" rel="noopener" class="report-url">
-          {{ report.scan.url }}
-        </a>
-        <div class="score-section">
-          <ScoreGauge :score="report.scan.score" size="lg" />
-          <div class="score-info">
-            <RiskBadge :risk-level="report.scan.riskLevel as RiskLevel" />
-            <p class="score-text">Pontuacao geral: {{ report.scan.score.toFixed(1) }}/100</p>
-          </div>
-        </div>
-      </section>
+  <div v-else-if="report" class="grid gap-8 lg:grid-cols-[18rem_1fr]">
+    <!-- Trilho do laudo: selo + índice de conformidade -->
+    <aside class="space-y-5 lg:sticky lg:top-20 lg:self-start">
+      <div class="sheet flex flex-col items-center gap-3 p-6">
+        <ScoreGauge :score="report.scan.score" :risk-level="report.scan.riskLevel as RiskLevel" size="lg" />
+        <RiskBadge :risk-level="report.scan.riskLevel as RiskLevel" />
+      </div>
+      <div class="sheet space-y-4 p-5">
+        <p class="eyebrow">Síntese por categoria</p>
+        <CategorySummary :categories="report.categories" />
+      </div>
+    </aside>
+
+    <!-- Corpo do laudo -->
+    <div class="space-y-10">
+      <header class="space-y-2 border-b border-border pb-5">
+        <p class="eyebrow">Laudo de conformidade · LGPD</p>
+        <h1 class="font-display text-3xl font-extrabold tracking-tight">Relatório de avaliação</h1>
+        <a :href="report.scan.url" target="_blank" rel="noopener"
+           class="block break-all font-mono text-sm text-primary hover:underline">{{ report.scan.url }}</a>
+        <p class="font-mono text-xs text-muted-foreground">Emitido em {{ fmtDate(report.scan.completedAt) }}</p>
+      </header>
 
       <LegalDisclaimer />
 
-      <!-- Category Summary -->
-      <section class="report-section">
-        <h2>Resumo por Categoria</h2>
-        <CategorySummary :categories="report.categories" />
-      </section>
-
-      <!-- Detailed Findings per Category -->
-      <section
-        v-for="cat in report.categories"
-        :key="cat.category"
-        class="report-section"
-      >
-        <h2>
-          {{ CATEGORY_LABELS[cat.category] || cat.category }}
-          <span class="cat-score-badge">
-            {{ cat.percentage }}% ({{ cat.score.toFixed(1) }}/{{ cat.maxScore }})
-          </span>
-        </h2>
-        <p class="cat-summary">{{ cat.summary }}</p>
-
-        <FindingCard
-          v-for="finding in cat.findings"
-          :key="finding.id"
-          :finding="finding"
-        />
+      <section v-for="cat in report.categories" :key="cat.category" :id="`cat-${cat.category}`" class="scroll-mt-20 space-y-4">
+        <header class="space-y-1.5">
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h2 class="font-display text-xl font-bold">{{ CATEGORY_LABELS[cat.category] || cat.category }}</h2>
+            <span class="font-mono text-xs text-accent">{{ CATEGORY_ARTICLE[cat.category] }}</span>
+            <Badge variant="outline" class="ml-auto">{{ cat.percentage }}% · {{ cat.score.toFixed(1) }}/{{ cat.maxScore }}</Badge>
+          </div>
+          <p class="prose-lei text-sm leading-relaxed text-muted-foreground">{{ cat.summary }}</p>
+        </header>
+        <div class="space-y-3">
+          <FindingCard v-for="(f, i) in cat.findings" :key="f.id" :finding="f" :index="i" />
+        </div>
       </section>
 
       <!-- Cookies -->
-      <section v-if="report.cookies.length > 0" class="report-section">
-        <h2>Cookies Detectados</h2>
-        <div class="table-wrapper">
-          <table class="cookie-table">
+      <section v-if="report.cookies.length" class="space-y-4">
+        <header class="flex flex-wrap items-baseline gap-x-3 border-b border-border pb-2">
+          <h2 class="font-display text-xl font-bold">Cookies detectados</h2>
+          <span class="font-mono text-xs text-accent">Art. 7º · 8º</span>
+        </header>
+        <div class="sheet overflow-x-auto">
+          <table class="w-full text-left text-sm">
             <thead>
-              <tr>
-                <th>Nome</th>
-                <th>Domínio</th>
-                <th>Tipo</th>
-                <th>Origem</th>
-                <th>Carregado antes do consentimento</th>
+              <tr class="border-b border-border bg-muted/50 font-mono text-[0.65rem] uppercase tracking-[0.08em] text-muted-foreground">
+                <th class="px-4 py-2.5 font-medium">Nome</th>
+                <th class="px-4 py-2.5 font-medium">Domínio</th>
+                <th class="px-4 py-2.5 font-medium">Tipo</th>
+                <th class="px-4 py-2.5 font-medium">Origem</th>
+                <th class="px-4 py-2.5 font-medium">Antes do consentimento</th>
               </tr>
             </thead>
-            <tbody>
-              <tr v-for="cookie in report.cookies" :key="cookie.id">
-                <td>{{ cookie.name }}</td>
-                <td>{{ cookie.domain }}</td>
-                <td>{{ cookie.type }}</td>
-                <td>{{ cookie.origin === 'first_party' ? 'Proprio' : 'Terceiro' }}</td>
-                <td>
-                  <span v-if="cookie.loadedBeforeConsent" class="badge badge--warn">Sim</span>
-                  <span v-else class="badge badge--ok">Nao</span>
+            <tbody class="divide-y divide-border">
+              <tr v-for="c in report.cookies" :key="c.id" class="transition-colors hover:bg-muted/40">
+                <td class="px-4 py-3 font-mono text-xs">{{ c.name }}</td>
+                <td class="px-4 py-3 text-xs text-muted-foreground">{{ c.domain }}</td>
+                <td class="px-4 py-3"><Badge variant="outline">{{ COOKIE_TYPE_LABELS[c.type] || c.type }}</Badge></td>
+                <td class="px-4 py-3 text-xs">{{ c.origin === 'first_party' ? 'Próprio' : 'Terceiro' }}</td>
+                <td class="px-4 py-3">
+                  <Badge :variant="c.loadedBeforeConsent ? 'high' : 'good'">
+                    {{ c.loadedBeforeConsent ? 'Sim' : 'Não' }}
+                  </Badge>
                 </td>
               </tr>
             </tbody>
@@ -95,180 +120,33 @@ const { report, isLoading, error } = useReport(scanId);
         </div>
       </section>
 
-      <!-- Forms -->
-      <section v-if="report.forms.length > 0" class="report-section">
-        <h2>Formularios Encontrados</h2>
-        <div v-for="form in report.forms" :key="form.id" class="form-card">
-          <p><strong>Pagina:</strong> {{ form.pageUrl }}</p>
-          <p><strong>HTTPS:</strong> {{ form.hasSecureAction ? 'Sim' : 'Nao' }}</p>
-          <p><strong>Aviso de privacidade:</strong> {{ form.privacyNotice ? 'Presente' : 'Ausente' }}</p>
-          <div v-if="form.fields.length > 0">
-            <strong>Campos:</strong>
-            <ul class="field-list">
-              <li v-for="(field, i) in form.fields" :key="i">
-                {{ field.label || field.name }}
-                <span v-if="field.isPersonalData" class="badge badge--info">Dado pessoal</span>
-                <span v-if="field.isSensitive" class="badge badge--warn">Sensivel</span>
-              </li>
-            </ul>
+      <!-- Formulários -->
+      <section v-if="report.forms.length" class="space-y-4">
+        <header class="flex flex-wrap items-baseline gap-x-3 border-b border-border pb-2">
+          <h2 class="font-display text-xl font-bold">Formulários</h2>
+          <span class="font-mono text-xs text-accent">Art. 5º · 11</span>
+        </header>
+        <div class="sheet space-y-3 p-5 text-sm" v-for="form in report.forms" :key="form.id">
+          <p class="break-all font-mono text-xs text-muted-foreground">{{ form.pageUrl }}</p>
+          <div class="flex flex-wrap gap-2">
+            <Badge :variant="form.hasSecureAction ? 'good' : 'high'">HTTPS · {{ form.hasSecureAction ? 'Sim' : 'Não' }}</Badge>
+            <Badge :variant="form.privacyNotice ? 'good' : 'medium'">Aviso de privacidade · {{ form.privacyNotice ? 'Presente' : 'Ausente' }}</Badge>
           </div>
-          <div v-if="form.excessiveFields.length > 0" class="excessive-alert">
-            Campos potencialmente excessivos: {{ form.excessiveFields.join(', ') }}
-          </div>
+          <ul v-if="form.fields.length" class="flex flex-wrap gap-2">
+            <li v-for="(f, i) in form.fields" :key="i"
+                class="inline-flex items-center gap-1.5 rounded-sm border border-border px-2 py-1 text-xs">
+              {{ f.label || f.name }}
+              <Badge v-if="f.isSensitive" variant="high">Sensível</Badge>
+              <Badge v-else-if="f.isPersonalData" variant="default">Pessoal</Badge>
+            </li>
+          </ul>
+          <p v-if="form.excessiveFields.length" class="tarja rounded-sm bg-muted/50 p-3 text-xs leading-relaxed">
+            <strong class="text-risk-medium">Campos possivelmente excessivos:</strong> {{ form.excessiveFields.join(', ') }}
+          </p>
         </div>
       </section>
 
       <LegalDisclaimer />
-    </template>
+    </div>
   </div>
 </template>
-
-<style scoped>
-.report-view {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.loading,
-.error {
-  text-align: center;
-  padding: 48px 16px;
-  color: var(--color-text-secondary);
-}
-
-.error {
-  color: var(--color-danger);
-}
-
-.report-header {
-  text-align: center;
-  padding: 16px 0;
-}
-
-h1 {
-  font-size: 1.6rem;
-  margin-bottom: 4px;
-}
-
-.report-url {
-  color: var(--color-primary);
-  font-size: 0.9rem;
-  word-break: break-all;
-  display: block;
-  margin-bottom: 20px;
-}
-
-.score-section {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 20px;
-  flex-wrap: wrap;
-}
-
-.score-info {
-  text-align: left;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-}
-
-.score-text {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-}
-
-.report-section {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.report-section h2 {
-  font-size: 1.2rem;
-}
-
-.cat-score-badge {
-  font-size: 0.8rem;
-  font-weight: 400;
-  color: var(--color-text-secondary);
-  margin-left: 8px;
-}
-
-.cat-summary {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-}
-
-.table-wrapper {
-  overflow-x: auto;
-}
-
-.cookie-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.85rem;
-}
-
-.cookie-table th,
-.cookie-table td {
-  padding: 8px 12px;
-  text-align: left;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.cookie-table th {
-  font-weight: 600;
-  background: var(--color-bg);
-}
-
-.badge {
-  display: inline-block;
-  padding: 2px 8px;
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-weight: 600;
-}
-
-.badge--warn { background: #fef7e0; color: #e37400; }
-.badge--ok { background: #e6f4ea; color: #188038; }
-.badge--info { background: #e8f0fe; color: #1a73e8; }
-
-.form-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-}
-
-.field-list {
-  margin-top: 4px;
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  font-size: 0.85rem;
-}
-
-.field-list li {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  flex-wrap: wrap;
-}
-
-.excessive-alert {
-  background: #fef7e0;
-  border: 1px solid #fbbc04;
-  border-radius: var(--radius-sm);
-  padding: 8px 12px;
-  font-size: 0.82rem;
-  color: #5f4b00;
-}
-</style>

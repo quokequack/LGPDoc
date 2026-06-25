@@ -1,22 +1,25 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { ReportResponse } from '@/types/report.types';
-import * as reportService from '@/services/report.service';
+import { getMockReport } from '@/mock/reports';
+import { DEMO_SCAN_URL } from '@/mock/scans';
 
 export const useReportStore = defineStore('report', () => {
   const report = ref<ReportResponse | null>(null);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
 
-  async function fetchReport(scanId: string) {
+  async function fetchReport(scanId: string, url = DEMO_SCAN_URL) {
     isLoading.value = true;
     error.value = null;
     try {
-      report.value = await reportService.getReport(scanId);
+      // Simulate network delay
+      await new Promise((r) => setTimeout(r, 400));
+      report.value = getMockReport(scanId, url); console.log("FETCH-DONE report set?", !!report.value, "loading", isLoading.value);
       return report.value;
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erro ao carregar relatorio';
-      throw err;
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Erro ao carregar relatorio';
+      throw e;
     } finally {
       isLoading.value = false;
     }
@@ -28,11 +31,5 @@ export const useReportStore = defineStore('report', () => {
     isLoading.value = false;
   }
 
-  return {
-    report,
-    isLoading,
-    error,
-    fetchReport,
-    reset,
-  };
+  return { report, isLoading, error, fetchReport, reset };
 });

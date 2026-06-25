@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { GlossaryTerm } from '@/types/glossary.types';
-import * as glossaryService from '@/services/glossary.service';
+import { getMockGlossaryTerms, searchMockGlossary } from '@/mock/glossary';
 
 export const useGlossaryStore = defineStore('glossary', () => {
   const terms = ref<GlossaryTerm[]>([]);
@@ -14,9 +14,11 @@ export const useGlossaryStore = defineStore('glossary', () => {
     error.value = null;
     try {
       searchQuery.value = search || '';
-      terms.value = await glossaryService.getGlossary(search || undefined);
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erro ao carregar glossario';
+      terms.value = search
+        ? await searchMockGlossary(search, 300)
+        : getMockGlossaryTerms();
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Erro ao carregar glossario';
     } finally {
       isLoading.value = false;
     }
@@ -28,12 +30,5 @@ export const useGlossaryStore = defineStore('glossary', () => {
     error.value = null;
   }
 
-  return {
-    terms,
-    searchQuery,
-    isLoading,
-    error,
-    fetchTerms,
-    reset,
-  };
+  return { terms, searchQuery, isLoading, error, fetchTerms, reset };
 });

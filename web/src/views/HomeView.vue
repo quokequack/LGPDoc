@@ -1,117 +1,96 @@
 <script setup lang="ts">
-import { useScan } from '@/composables/useScan';
 import UrlInput from '@/components/scan/UrlInput.vue';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer.vue';
+import ScoreGauge from '@/components/report/ScoreGauge.vue';
+import {
+  Globe, ScanSearch, FileCheck2,
+  FileText, Cookie, ClipboardList, Scale, Building2, ShieldCheck, Languages,
+} from '@lucide/vue';
+
+const steps = [
+  { n: '01', icon: Globe, title: 'Informe a URL', desc: 'Cole o endereço público de um site brasileiro que você queira avaliar.' },
+  { n: '02', icon: ScanSearch, title: 'Perícia automática', desc: 'Lemos política, cookies, formulários e segurança — só o que é público.' },
+  { n: '03', icon: FileCheck2, title: 'Receba o laudo', desc: 'Pontuação, nível de risco e correções, artigo por artigo da LGPD.' },
+];
+
+const categories = [
+  { icon: FileText, title: 'Política de Privacidade', art: 'Art. 6º · 9º', desc: 'Existência, finalidade, bases legais e retenção.' },
+  { icon: Cookie, title: 'Cookies', art: 'Art. 7º · 8º', desc: 'Banner, consentimento e classificação por tipo.' },
+  { icon: ClipboardList, title: 'Formulários', art: 'Art. 5º · 11', desc: 'Dados pessoais, sensíveis e minimização.' },
+  { icon: Scale, title: 'Direitos do Titular', art: 'Art. 18', desc: 'Acesso, correção, exclusão e portabilidade.' },
+  { icon: Building2, title: 'Controlador e Contato', art: 'Art. 5º · 41', desc: 'Identificação do responsável e canal do DPO.' },
+  { icon: ShieldCheck, title: 'Segurança Básica', art: 'Art. 46', desc: 'HTTPS, páginas seguras e scripts de terceiros.' },
+  { icon: Languages, title: 'Linguagem Clara', art: 'Art. 6º VI', desc: 'Transparência e ausência de termos vagos.' },
+];
 </script>
 
 <template>
-  <div class="home-view">
-    <section class="hero">
-      <h1>Scanner LGPD Educacional</h1>
-      <p class="hero-subtitle">
-        Analise gratuita e educativa de sites para verificar boas praticas de protecao de dados pessoais
-        conforme a Lei Geral de Protecao de Dados (LGPD).
-      </p>
-    </section>
-
-    <section class="scan-section">
-      <UrlInput />
-    </section>
-
-    <section class="info-section">
-      <div class="info-card">
-        <h3>Como funciona</h3>
-        <ol>
-          <li>Informe a URL de um site</li>
-          <li>Aguarde a analise automatizada (ate 60 segundos)</li>
-          <li>Receba um relatorio didatico com pontuacao, riscos e recomendacoes</li>
-        </ol>
+  <div class="space-y-16">
+    <!-- Hero: abertura do laudo -->
+    <section class="grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
+      <div class="space-y-6">
+        <p class="eyebrow">Laudo educativo · Lei nº 13.709/2018</p>
+        <h1 class="font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
+          Seu site fala
+          <span class="text-primary">a língua da LGPD?</span>
+        </h1>
+        <p class="prose-lei max-w-xl text-lg leading-relaxed text-muted-foreground">
+          Informe um endereço e o LGPDoc emite um laudo didático: o que está conforme, o que falta
+          e como corrigir — cada ponto ligado ao artigo da lei que o sustenta.
+        </p>
+        <div class="sheet max-w-xl p-5 sm:p-6">
+          <UrlInput />
+        </div>
+        <LegalDisclaimer class="max-w-xl" />
       </div>
-      <div class="info-card">
-        <h3>O que e analisado</h3>
-        <ul>
-          <li>Politica de privacidade</li>
-          <li>Cookies e banners de consentimento</li>
-          <li>Formularios e dados coletados</li>
-          <li>Direitos do titular</li>
-          <li>Seguranca basica (HTTPS)</li>
-          <li>Clareza da linguagem</li>
-        </ul>
-      </div>
-      <div class="info-card">
-        <h3>Importante</h3>
-        <p>Esta ferramenta tem carater <strong>exclusivamente educativo</strong>. O resultado nao constitui parecer juridico ou certificacao de conformidade.</p>
+
+      <!-- Signature: selo de exemplo -->
+      <div class="flex flex-col items-center gap-3">
+        <ScoreGauge :score="58" risk-level="medium" size="lg" />
+        <p class="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
+          Exemplo de selo de avaliação
+        </p>
       </div>
     </section>
 
-    <LegalDisclaimer />
+    <!-- Como funciona — sequência real, por isso numerada -->
+    <section class="space-y-6">
+      <header class="flex items-end justify-between gap-4 border-b border-border pb-3">
+        <h2 class="font-display text-xl font-bold">Como funciona</h2>
+        <span class="eyebrow">Três passos</span>
+      </header>
+      <ol class="grid gap-px overflow-hidden rounded-sm border border-border bg-border sm:grid-cols-3">
+        <li v-for="step in steps" :key="step.n" class="flex flex-col gap-3 bg-card p-5">
+          <div class="flex items-center justify-between">
+            <component :is="step.icon" class="h-6 w-6 text-primary" aria-hidden="true" />
+            <span class="font-mono text-2xl font-medium text-accent/40">{{ step.n }}</span>
+          </div>
+          <h3 class="font-display text-base font-semibold">{{ step.title }}</h3>
+          <p class="text-sm leading-relaxed text-muted-foreground">{{ step.desc }}</p>
+        </li>
+      </ol>
+    </section>
+
+    <!-- O que é analisado — espelha a coluna de artigos do laudo -->
+    <section class="space-y-6">
+      <header class="flex items-end justify-between gap-4 border-b border-border pb-3">
+        <h2 class="font-display text-xl font-bold">O que é analisado</h2>
+        <span class="eyebrow">7 frentes · 33 critérios</span>
+      </header>
+      <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        <div v-for="cat in categories" :key="cat.title" class="sheet flex items-start gap-3.5 p-4">
+          <span class="grid h-10 w-10 shrink-0 place-items-center rounded-sm bg-primary/8 text-primary">
+            <component :is="cat.icon" class="h-5 w-5" aria-hidden="true" />
+          </span>
+          <div class="min-w-0">
+            <div class="flex flex-wrap items-baseline gap-x-2">
+              <h3 class="font-display text-sm font-semibold">{{ cat.title }}</h3>
+              <span class="font-mono text-[0.65rem] text-accent">{{ cat.art }}</span>
+            </div>
+            <p class="mt-1 text-xs leading-relaxed text-muted-foreground">{{ cat.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </section>
   </div>
 </template>
-
-<style scoped>
-.home-view {
-  display: flex;
-  flex-direction: column;
-  gap: 32px;
-}
-
-.hero {
-  text-align: center;
-  padding: 32px 0 8px;
-}
-
-.hero h1 {
-  font-size: 2rem;
-  color: var(--color-text);
-  margin-bottom: 8px;
-}
-
-.hero-subtitle {
-  font-size: 1.05rem;
-  color: var(--color-text-secondary);
-  max-width: 600px;
-  margin: 0 auto;
-  line-height: 1.5;
-}
-
-.scan-section {
-  max-width: 560px;
-  margin: 0 auto;
-  width: 100%;
-}
-
-.info-section {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 16px;
-}
-
-.info-card {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 20px;
-}
-
-.info-card h3 {
-  font-size: 1rem;
-  margin-bottom: 12px;
-  color: var(--color-primary);
-}
-
-.info-card ol,
-.info-card ul {
-  padding-left: 20px;
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-}
-
-.info-card p {
-  font-size: 0.9rem;
-  color: var(--color-text-secondary);
-  line-height: 1.5;
-}
-</style>

@@ -9,6 +9,7 @@
     "jsxImportSource": "vue",
     "esModuleInterop": true,
     "skipLibCheck": true,
+    "noEmit": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
     "isolatedModules": true,

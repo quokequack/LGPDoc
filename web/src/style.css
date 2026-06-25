@@ -1,0 +1,209 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ──────────────────────────────────────────────────────────────────────────
+   LGPDoc — identidade "laudo de conformidade"
+   Tinta sobre papel. Navio institucional, selo em latão, riscos como carimbos.
+   ────────────────────────────────────────────────────────────────────────── */
+
+@layer base {
+  :root {
+    /* Superfícies — papel frio (mesa) e folha branca (documento) */
+    --background: 210 24% 97%;
+    --foreground: 212 32% 14%;
+    --card: 0 0% 100%;
+    --card-foreground: 212 32% 14%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 212 32% 14%;
+
+    /* Processo — azul institucional, a única cor interativa/de marca */
+    --primary: 209 56% 25%;
+    --primary-foreground: 210 30% 98%;
+
+    /* Selo — latão dessaturado, a joia rara */
+    --accent: 40 53% 38%;
+    --accent-foreground: 210 30% 98%;
+
+    /* Secundário usa o latão por padrão (raro, decisões deliberadas) */
+    --secondary: 40 53% 38%;
+    --secondary-foreground: 210 30% 98%;
+
+    --muted: 210 20% 93%;
+    --muted-foreground: 211 16% 40%;
+
+    /* Risco "alto" = vermelho oxblood (também o destrutivo) */
+    --destructive: 6 56% 42%;
+    --destructive-foreground: 210 30% 98%;
+
+    --border: 212 18% 85%;
+    --input: 212 18% 80%;
+    --ring: 209 56% 25%;
+    --radius: 0.1875rem;
+
+    /* Escala de risco — carimbos de tinta, nunca cores de bala */
+    --risk-good: 152 32% 32%;
+    --risk-low: 198 46% 33%;
+    --risk-medium: 36 56% 39%;
+    --risk-high: 6 56% 42%;
+    --risk-good-foreground: 152 40% 96%;
+    --risk-low-foreground: 198 40% 96%;
+    --risk-medium-foreground: 36 50% 97%;
+    --risk-high-foreground: 6 50% 97%;
+
+    /* Tinta do selo / textura de papel */
+    --seal-ink: 209 56% 25%;
+    --paper-line: 212 20% 90%;
+  }
+
+  .dark {
+    --background: 212 32% 8%;
+    --foreground: 205 18% 90%;
+    --card: 212 28% 11%;
+    --card-foreground: 205 18% 90%;
+    --popover: 212 28% 11%;
+    --popover-foreground: 205 18% 90%;
+
+    --primary: 205 62% 64%;
+    --primary-foreground: 212 40% 10%;
+
+    --accent: 40 58% 58%;
+    --accent-foreground: 212 40% 10%;
+    --secondary: 40 58% 58%;
+    --secondary-foreground: 212 40% 10%;
+
+    --muted: 212 22% 16%;
+    --muted-foreground: 210 14% 62%;
+
+    --destructive: 6 60% 58%;
+    --destructive-foreground: 212 40% 10%;
+
+    --border: 212 18% 22%;
+    --input: 212 18% 26%;
+    --ring: 205 62% 64%;
+
+    --risk-good: 152 38% 52%;
+    --risk-low: 198 50% 56%;
+    --risk-medium: 38 62% 56%;
+    --risk-high: 6 62% 60%;
+    --risk-good-foreground: 152 40% 8%;
+    --risk-low-foreground: 198 40% 8%;
+    --risk-medium-foreground: 36 50% 8%;
+    --risk-high-foreground: 6 50% 8%;
+
+    --seal-ink: 205 62% 64%;
+    --paper-line: 212 18% 20%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  html {
+    @apply transition-colors duration-300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    @apply bg-background text-foreground transition-colors duration-300;
+    font-family: 'Archivo', system-ui, sans-serif;
+    font-feature-settings: 'cv05' 1, 'ss01' 1;
+    /* Mesa de papel: grade pautada muito tênue, só sugere a superfície */
+    background-image:
+      linear-gradient(hsl(var(--paper-line) / 0.45) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--paper-line) / 0.45) 1px, transparent 1px);
+    background-size: 100% 4rem, 4rem 100%;
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, .font-display {
+    font-family: 'Archivo', system-ui, sans-serif;
+    font-weight: 700;
+    letter-spacing: -0.012em;
+  }
+
+  .font-serif, .prose-lei {
+    font-family: 'Spectral', Georgia, serif;
+  }
+
+  code, kbd, samp, .font-mono {
+    font-family: 'IBM Plex Mono', ui-monospace, monospace;
+    font-feature-settings: 'zero' 1;
+  }
+
+  ::selection {
+    background: hsl(var(--accent) / 0.25);
+  }
+}
+
+@layer components {
+  /* Eyebrow institucional — etiqueta de seção em versalete espaçado */
+  .eyebrow {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.6875rem;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: hsl(var(--accent));
+  }
+
+  /* Folha — documento branco sobre a mesa, sombra de papel real */
+  .sheet {
+    background: hsl(var(--card));
+    border: 1px solid hsl(var(--border));
+    border-radius: var(--radius);
+    box-shadow:
+      0 1px 0 hsl(var(--foreground) / 0.04),
+      0 1px 2px hsl(var(--foreground) / 0.06),
+      0 8px 24px -16px hsl(var(--foreground) / 0.28);
+  }
+
+  /* Régua de latão — divisor-joia usado com parcimônia */
+  .rule-selo {
+    height: 2px;
+    background: linear-gradient(90deg, hsl(var(--accent)) 0 1.5rem, hsl(var(--border)) 1.5rem 100%);
+  }
+
+  /* Tarja de classificação — faixa lateral de risco em documento oficial */
+  .tarja {
+    border-left: 3px solid hsl(var(--risk-medium));
+  }
+
+  /* Selo — pressão de carimbo */
+  .selo-press {
+    filter: drop-shadow(0 1px 0 hsl(var(--foreground) / 0.12));
+  }
+
+  /* Foco visível institucional, consistente em todo o app */
+  .focus-laudo:focus-visible {
+    outline: 2px solid hsl(var(--ring));
+    outline-offset: 2px;
+  }
+}
+
+@layer utilities {
+  .text-risk-good { color: hsl(var(--risk-good)); }
+  .text-risk-low { color: hsl(var(--risk-low)); }
+  .text-risk-medium { color: hsl(var(--risk-medium)); }
+  .text-risk-high { color: hsl(var(--risk-high)); }
+  .bg-risk-good { background-color: hsl(var(--risk-good)); }
+  .bg-risk-low { background-color: hsl(var(--risk-low)); }
+  .bg-risk-medium { background-color: hsl(var(--risk-medium)); }
+  .bg-risk-high { background-color: hsl(var(--risk-high)); }
+  .border-risk-good { border-color: hsl(var(--risk-good)); }
+  .border-risk-low { border-color: hsl(var(--risk-low)); }
+  .border-risk-medium { border-color: hsl(var(--risk-medium)); }
+  .border-risk-high { border-color: hsl(var(--risk-high)); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

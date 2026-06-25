@@ -1,77 +1,43 @@
 <script setup lang="ts">
 import { RouterView } from 'vue-router';
+import { useTheme } from '@/composables/useTheme';
 import AppHeader from '@/components/layout/AppHeader.vue';
 import AppFooter from '@/components/layout/AppFooter.vue';
+
+useTheme();
 </script>
 
 <template>
-  <div class="app-layout">
+  <div class="flex min-h-screen flex-col bg-background text-foreground transition-colors duration-300">
     <AppHeader />
-    <main class="app-main">
-      <RouterView />
+    <main class="mx-auto w-full max-w-laudo flex-1 px-4 py-10 sm:px-6 lg:py-14">
+      <RouterView v-slot="{ Component }">
+        <Transition name="page" mode="out-in">
+          <component :is="Component" />
+        </Transition>
+      </RouterView>
     </main>
     <AppFooter />
   </div>
 </template>
 
 <style>
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+.page-enter-active {
+  transition: opacity 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
-
-:root {
-  --color-primary: #1a73e8;
-  --color-primary-dark: #1557b0;
-  --color-danger: #d93025;
-  --color-warning: #e37400;
-  --color-success: #188038;
-  --color-info: #1967d2;
-  --color-bg: #f8f9fa;
-  --color-surface: #ffffff;
-  --color-text: #202124;
-  --color-text-secondary: #5f6368;
-  --color-border: #dadce0;
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.1);
-  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.12);
-  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+.page-leave-active {
+  transition: opacity 0.18s ease;
 }
-
-html {
-  font-size: 16px;
-  -webkit-font-smoothing: antialiased;
+.page-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
 }
-
-body {
-  font-family: var(--font-sans);
-  color: var(--color-text);
-  background: var(--color-bg);
-  line-height: 1.6;
+.page-leave-to {
+  opacity: 0;
 }
-
-.app-layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.app-main {
-  flex: 1;
-  width: 100%;
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 32px 16px;
-}
-
-@media (max-width: 768px) {
-  .app-main {
-    padding: 16px 12px;
+@media (prefers-reduced-motion: reduce) {
+  .page-enter-from {
+    transform: none;
   }
 }
 </style>

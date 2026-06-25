@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia';
 import { ref } from 'vue';
 import type { ScanResponse, ScanListItem } from '@/types/scan.types';
-import * as scanService from '@/services/scan.service';
+import { getMockScanProgress, generateMockScanList } from '@/mock/scans';
 
 export const useScanStore = defineStore('scan', () => {
   const currentScan = ref<ScanResponse | null>(null);
@@ -11,17 +11,38 @@ export const useScanStore = defineStore('scan', () => {
   const currentPage = ref(1);
   const isLoading = ref(false);
   const error = ref<string | null>(null);
-  const pollingId = ref<ReturnType<typeof setInterval> | null>(null);
+  let pollingTimer: ReturnType<typeof setInterval> | null = null;
 
   async function startScan(url: string) {
     isLoading.value = true;
     error.value = null;
     try {
-      currentScan.value = await scanService.createScan(url);
-      return currentScan.value;
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erro ao iniciar analise';
-      throw err;
+      const elapsed = ref(0);
+      currentScan.value = {
+        id: crypto.randomUUID(),
+        url,
+        status: 'pending',
+        score: null,
+        riskLevel: null,
+        startedAt: new Date().toISOString(),
+        completedAt: null,
+        errorMessage: null,
+        createdAt: new Date().toISOString(),
+      };
+
+      // Simulate progress: pending → running → completed
+      setTimeout(() => {
+        if (currentScan.value) {
+          currentScan.value = { ...currentScan.value, status: 'running' };
+        }
+      }, 300);
+
+      const result = await getMockScanProgress(url, 4000);
+      currentScan.value = result;
+      return result;
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Erro ao iniciar analise';
+      throw e;
     } finally {
       isLoading.value = false;
     }
@@ -29,37 +50,32 @@ export const useScanStore = defineStore('scan', () => {
 
   function startPolling(scanId: string, onComplete?: (scan: ScanResponse) => void) {
     stopPolling();
-    pollingId.value = setInterval(async () => {
-      try {
-        const scan = await scanService.getScan(scanId);
-        currentScan.value = scan;
-        if (scan.status === 'completed' || scan.status === 'failed') {
-          stopPolling();
-          if (onComplete) onComplete(scan);
-        }
-      } catch {
+    pollingTimer = setInterval(() => {
+      if (currentScan.value?.status === 'completed' || currentScan.value?.status === 'failed') {
         stopPolling();
+        if (onComplete && currentScan.value) onComplete(currentScan.value);
       }
-    }, 2000);
+    }, 500);
   }
 
   function stopPolling() {
-    if (pollingId.value) {
-      clearInterval(pollingId.value);
-      pollingId.value = null;
+    if (pollingTimer) {
+      clearInterval(pollingTimer);
+      pollingTimer = null;
     }
   }
 
   async function fetchScanList(page = 1, limit = 20) {
     isLoading.value = true;
     try {
-      const result = await scanService.listScans({ page, limit, sort: 'createdAt', order: 'desc' });
-      scanList.value = result.data;
-      totalScans.value = result.total;
-      totalPages.value = result.totalPages;
+      const all = generateMockScanList(10);
+      const start = (page - 1) * limit;
+      scanList.value = all.slice(start, start + limit);
+      totalScans.value = all.length;
+      totalPages.value = Math.ceil(all.length / limit);
       currentPage.value = page;
-    } catch (err) {
-      error.value = err instanceof Error ? err.message : 'Erro ao carregar historico';
+    } catch (e) {
+      error.value = e instanceof Error ? e.message : 'Erro ao carregar historico';
     } finally {
       isLoading.value = false;
     }

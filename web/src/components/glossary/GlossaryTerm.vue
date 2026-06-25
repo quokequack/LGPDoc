@@ -1,74 +1,22 @@
 <script setup lang="ts">
 import type { GlossaryTerm } from '@/types/glossary.types';
+import Badge from '@/components/ui/Badge.vue';
 
-defineProps<{
-  term: GlossaryTerm;
-}>();
+defineProps<{ term: GlossaryTerm }>();
 </script>
 
 <template>
-  <article class="glossary-term">
-    <h3 class="term-name">{{ term.term }}</h3>
-    <p class="term-definition">{{ term.definition }}</p>
-    <div class="term-meta">
-      <span v-if="term.lgpdArticle" class="term-article">
-        {{ term.lgpdArticle }}
+  <article class="sheet space-y-2.5 p-5">
+    <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+      <h3 class="font-display text-lg font-bold">{{ term.term }}</h3>
+      <span v-if="term.lgpdArticle" class="font-mono text-xs text-accent">
+        <span class="opacity-60">§</span> {{ term.lgpdArticle }}
       </span>
-      <span v-if="term.relatedTerms.length > 0" class="term-related">
-        Relacionados:
-        <span
-          v-for="(rel, i) in term.relatedTerms"
-          :key="i"
-          class="related-tag"
-        >
-          {{ rel }}<span v-if="i < term.relatedTerms.length - 1">, </span>
-        </span>
-      </span>
+    </div>
+    <p class="prose-lei leading-relaxed text-card-foreground/90">{{ term.definition }}</p>
+    <div v-if="term.relatedTerms.length" class="flex flex-wrap items-center gap-1.5 pt-1">
+      <span class="font-mono text-[0.65rem] uppercase tracking-[0.1em] text-muted-foreground">Ver também</span>
+      <Badge v-for="(r, i) in term.relatedTerms" :key="i" variant="outline">{{ r }}</Badge>
     </div>
   </article>
 </template>
-
-<style scoped>
-.glossary-term {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: 16px;
-}
-
-.term-name {
-  font-size: 1.05rem;
-  color: var(--color-primary);
-  margin-bottom: 8px;
-}
-
-.term-definition {
-  font-size: 0.92rem;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-  margin-bottom: 10px;
-}
-
-.term-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-  font-size: 0.8rem;
-}
-
-.term-article {
-  background: var(--color-bg);
-  padding: 3px 8px;
-  border-radius: var(--radius-sm);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-}
-
-.term-related {
-  color: var(--color-text-secondary);
-}
-
-.related-tag {
-  color: var(--color-primary);
-}
-</style>

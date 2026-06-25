@@ -1,99 +1,63 @@
 <script setup lang="ts">
-import { onMounted, watch } from 'vue';
+import { onMounted } from 'vue';
 import { useGlossaryStore } from '@/stores/glossary.store';
 import GlossarySearch from '@/components/glossary/GlossarySearch.vue';
 import GlossaryTerm from '@/components/glossary/GlossaryTerm.vue';
+import Skeleton from '@/components/ui/Skeleton.vue';
 
 const store = useGlossaryStore();
 
-onMounted(() => {
-  store.fetchTerms();
-});
+onMounted(() => store.fetchTerms());
 
-function handleSearch(query: string) {
-  store.fetchTerms(query || undefined);
-}
+function handleSearch(q: string) { store.fetchTerms(q || undefined); }
 </script>
 
 <template>
-  <div class="glossary-view">
-    <section class="glossary-header">
-      <h1>Glossario LGPD</h1>
-      <p class="glossary-desc">
-        Consulte os principais termos da Lei Geral de Protecao de Dados (LGPD)
-        com definicoes claras e acessiveis.
+  <div class="space-y-8">
+    <header class="space-y-3 border-b border-border pb-5">
+      <p class="eyebrow">Vocabulário · LGPD</p>
+      <h1 class="font-display text-3xl font-extrabold tracking-tight">Glossário</h1>
+      <p class="prose-lei max-w-xl text-lg leading-relaxed text-muted-foreground">
+        Os termos da Lei Geral de Proteção de Dados, explicados em linguagem acessível e
+        ligados aos seus artigos.
       </p>
-      <GlossarySearch @search="handleSearch" />
-    </section>
+      <GlossarySearch class="pt-1" @search="handleSearch" />
+    </header>
 
-    <div v-if="store.isLoading" class="loading">Carregando...</div>
+    <div v-if="store.isLoading" class="space-y-3">
+      <Skeleton v-for="i in 5" :key="i" class="h-28 w-full" />
+    </div>
 
-    <div v-else-if="store.error" class="error">{{ store.error }}</div>
+    <div v-else-if="store.error" class="py-10 text-center text-risk-high">{{ store.error }}</div>
 
-    <section v-else class="term-list">
-      <p v-if="store.terms.length === 0" class="no-results">
-        Nenhum termo encontrado para "{{ store.searchQuery }}".
+    <div v-else class="space-y-3">
+      <p v-if="store.terms.length === 0" class="py-10 text-center text-muted-foreground">
+        Nenhum termo encontrado para “{{ store.searchQuery }}”. Tente outra palavra.
       </p>
 
-      <GlossaryTerm
-        v-for="term in store.terms"
-        :key="term.id"
-        :term="term"
-      />
+      <TransitionGroup name="list" tag="div" class="flex flex-col gap-3">
+        <GlossaryTerm
+          v-for="(term, index) in store.terms"
+          :key="term.id"
+          :term="term"
+          :style="{ transitionDelay: `${Math.min(index * 40, 240)}ms` }"
+        />
+      </TransitionGroup>
 
-      <p class="term-count">
-        {{ store.terms.length }} termo(s)
-        <span v-if="store.searchQuery">para "{{ store.searchQuery }}"</span>
+      <p v-if="store.terms.length" class="pt-2 font-mono text-xs text-muted-foreground">
+        {{ store.terms.length }} termo(s)<span v-if="store.searchQuery"> · “{{ store.searchQuery }}”</span>
       </p>
-    </section>
+    </div>
   </div>
 </template>
 
 <style scoped>
-.glossary-view {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
-}
-
-.glossary-header {
-  text-align: center;
-}
-
-h1 {
-  font-size: 1.6rem;
-  margin-bottom: 4px;
-}
-
-.glossary-desc {
-  color: var(--color-text-secondary);
-  font-size: 0.95rem;
-  margin-bottom: 16px;
-  line-height: 1.5;
-}
-
-.loading,
-.error,
-.no-results {
-  text-align: center;
-  padding: 32px 16px;
-  color: var(--color-text-secondary);
-}
-
-.error {
-  color: var(--color-danger);
-}
-
-.term-list {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.term-count {
-  text-align: center;
-  font-size: 0.82rem;
-  color: var(--color-text-secondary);
-  margin-top: 8px;
+.list-enter-active { transition: opacity 0.4s ease, transform 0.4s ease; }
+.list-leave-active { transition: all 0.2s ease; position: absolute; }
+.list-enter-from { opacity: 0; transform: translateY(10px); }
+.list-leave-to { opacity: 0; transform: translateY(6px); }
+.list-move { transition: transform 0.3s ease; }
+@media (prefers-reduced-motion: reduce) {
+  .list-enter-from { transform: none; }
 }
 </style>
