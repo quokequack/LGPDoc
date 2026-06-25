@@ -5,7 +5,7 @@ import Input from '@/components/ui/Input.vue';
 import Button from '@/components/ui/Button.vue';
 import { cn } from '@/lib/utils';
 import { Globe, AlertCircle } from '@lucide/vue';
-import { DEMO_SCAN_URL } from '@/mock/scans';
+import { DEMO_SCAN_URL, DEMO_SITE_NAME } from '@/mock/scans';
 
 const { url, urlError, isSubmitting, validateUrl, submitScan } = useScan();
 const localUrl = ref('');
@@ -41,7 +41,7 @@ const inputClass = computed(() => cn('h-12 pl-10 text-base', urlError.value && '
         />
       </div>
       <Button type="submit" size="lg" :disabled="isSubmitting || !localUrl.trim()" class="h-12 sm:w-44">
-        {{ isSubmitting ? 'Abrindo laudo…' : 'Analisar site' }}
+        {{ isSubmitting ? 'Abrindo resultado…' : 'Analisar site' }}
       </Button>
     </div>
 
@@ -56,7 +56,7 @@ const inputClass = computed(() => cn('h-12 pl-10 text-base', urlError.value && '
       class="text-sm font-medium text-primary underline-offset-4 transition hover:underline disabled:opacity-50"
       @click="handleDemoSubmit"
     >
-      Ver um laudo de exemplo →
+      Ver resultado mockado: {{ DEMO_SITE_NAME }} →
     </button>
   </form>
 </template>

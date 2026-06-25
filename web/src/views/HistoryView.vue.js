@@ -9,7 +9,7 @@ const router = useRouter();
 const { scans, total, totalPages, currentPage, isLoading, error, loadHistory, prevPage, nextPage } = useScanHistory();
 onMounted(() => loadHistory(1));
 function viewReport(s) { if (s.status === 'completed')
-    router.push({ name: 'report', params: { id: s.id } }); }
+    router.push({ name: 'resultado' }); }
 function fmtDate(d) { return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 const statusMap = {
     pending: { label: 'Pendente', variant: 'secondary' },

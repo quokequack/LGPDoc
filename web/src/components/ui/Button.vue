@@ -7,16 +7,19 @@ import { computed } from 'vue';
 export type ButtonVariant = 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link';
 export type ButtonSize = 'default' | 'sm' | 'lg' | 'icon';
 
-interface Props extends /* @vue-ignore */ PrimitiveProps {
+interface Props {
   variant?: ButtonVariant;
   size?: ButtonSize;
   class?: string;
+  as?: PrimitiveProps['as'];
+  asChild?: boolean;
 }
 
 const props = withDefaults(defineProps<Props>(), {
   variant: 'default',
   size: 'default',
   as: 'button',
+  asChild: false,
 });
 
 const variantClasses: Record<ButtonVariant, string> = {
@@ -50,7 +53,7 @@ const classes = computed(() =>
 </script>
 
 <template>
-  <Primitive :as="as" :as-child="asChild" :class="classes">
+  <Primitive :as="props.as" :as-child="props.asChild" :class="classes">
     <slot />
   </Primitive>
 </template>

@@ -38,12 +38,12 @@ npm run dev
 2. Type any URL (e.g., `https://exemplo.gov.br`) and click "Analisar"
 3. Verify: Progress screen appears with animated bar
 4. Wait ~4 seconds
-5. Verify: Automatically redirects to full report
+5. Verify: Automatically redirects to full result
 6. Check: Score gauge shows 65.5, risk badge shows "Risco Medio"
 
 ### 2. Report Data Completeness
 
-1. On the report page, verify all sections render:
+1. On the result page, verify all sections render:
    - Score gauge (circular, animated)
    - Risk badge
    - 7 category summary bars
@@ -66,7 +66,7 @@ npm run dev
 1. Navigate to Histórico via header
 2. Verify: Table with 10 rows of mock scans
 3. Check: Different scores, risk levels, dates
-4. Click "Ver relatório" on a completed scan → opens report
+4. Click "Abrir" on a completed scan → opens result
 
 ### 5. Theme Toggle
 
@@ -90,7 +90,7 @@ npm run dev
 ### 7. Animations
 
 1. Navigate between pages → fade transition between views
-2. Reload report page → finding cards appear with staggered fade-in-up
+2. Reload result page → finding cards appear with staggered fade-in-up
 3. Hover over cards and table rows → smooth background transition
 4. Progress bar during scan → smooth width animation with easing
 
@@ -98,7 +98,7 @@ npm run dev
 
 | Test Case | Expected Behavior |
 |-----------|-------------------|
-| Submit URL on home | Progress screen, auto-redirect to report in ~4s |
+| Submit URL on home | Progress screen, auto-redirect to result in ~4s |
 | Report page loads | All 7 categories, 33 findings, cookies, forms visible |
 | Glossary search "lgpd" | 1 result after ~300ms with fade-in |
 | History page loads | 10 scan rows with varied data |

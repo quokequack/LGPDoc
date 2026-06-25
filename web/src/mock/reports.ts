@@ -1,19 +1,27 @@
 import type { ReportResponse, FindingItem, CookieItem, FormItem, FormField } from '@/types/report.types';
-import { DEMO_SCAN_URL } from '@/mock/scans';
+import { DEMO_SCAN_URL, DEMO_SITE_NAME, DEMO_SITE_SUMMARY } from '@/mock/scans';
 
 const FINDING_STATUSES: Array<FindingItem['status']> = ['found', 'partial', 'absent'];
+
+const DEMO_PAGES = [
+  `${DEMO_SCAN_URL}/politica-de-privacidade`,
+  `${DEMO_SCAN_URL}/agendamento`,
+  `${DEMO_SCAN_URL}/area-do-paciente`,
+  `${DEMO_SCAN_URL}/newsletter`,
+  `${DEMO_SCAN_URL}/contato`,
+];
 
 function makeFindings(): FindingItem[] {
   const findings: FindingItem[] = [
     // PRIVACY_POLICY C01-C08
-    { id: 'f-01', criterionCode: 'C01', criterionName: 'Existencia de politica de privacidade', status: 'found', score: 3.12, maxScore: 3.12, evidence: 'Politica encontrada em /politica-de-privacidade', explanation: 'A LGPD exige transparencia no tratamento de dados. A ausencia de politica impede que o titular saiba como seus dados sao usados.', lgpdReference: 'Art. 6, VI, LGPD (Transparencia)', recommendations: [] },
-    { id: 'f-02', criterionCode: 'C02', criterionName: 'Mencao aos dados coletados', status: 'found', score: 3.12, maxScore: 3.12, evidence: 'Lista de dados: nome, e-mail, telefone, CPF', explanation: 'O principio da transparencia exige que o titular saiba quais dados sao coletados.', lgpdReference: 'Art. 6, VI, LGPD', recommendations: [] },
-    { id: 'f-03', criterionCode: 'C03', criterionName: 'Mencao a finalidade', status: 'found', score: 3.12, maxScore: 3.12, evidence: 'Finalidades descritas por categoria de dado', explanation: 'O principio da finalidade determina que os dados sejam coletados para propositos legitimos e especificos.', lgpdReference: 'Art. 6, I, LGPD (Finalidade)', recommendations: [] },
+    { id: 'f-01', criterionCode: 'C01', criterionName: 'Existencia de politica de privacidade', status: 'found', score: 3.12, maxScore: 3.12, evidence: 'Politica encontrada em /politica-de-privacidade com data de atualizacao e link no rodape.', explanation: 'A LGPD exige transparencia no tratamento de dados. A ausencia de politica impede que o titular saiba como seus dados sao usados.', lgpdReference: 'Art. 6, VI, LGPD (Transparencia)', recommendations: [] },
+    { id: 'f-02', criterionCode: 'C02', criterionName: 'Mencao aos dados coletados', status: 'found', score: 3.12, maxScore: 3.12, evidence: 'Politica lista nome, e-mail, telefone, CPF, data de nascimento, convenio e historico de agendamentos.', explanation: 'O principio da transparencia exige que o titular saiba quais dados sao coletados.', lgpdReference: 'Art. 6, VI, LGPD', recommendations: [] },
+    { id: 'f-03', criterionCode: 'C03', criterionName: 'Mencao a finalidade', status: 'found', score: 3.12, maxScore: 3.12, evidence: 'Finalidades descritas para agendamento, lembrete de consulta, faturamento e comunicacao de campanhas preventivas.', explanation: 'O principio da finalidade determina que os dados sejam coletados para propositos legitimos e especificos.', lgpdReference: 'Art. 6, I, LGPD (Finalidade)', recommendations: [] },
     { id: 'f-04', criterionCode: 'C04', criterionName: 'Mencao ao tempo de armazenamento', status: 'partial', score: 1.56, maxScore: 3.12, evidence: 'Mencao generica: "pelo tempo necessario"', explanation: 'O principio da necessidade implica que dados nao devem ser mantidos alem do necessario.', lgpdReference: 'Art. 6, III, LGPD (Necessidade)', recommendations: [{ id: 'r-04', title: 'Especificar prazos de retencao', priority: 'medium', description: 'A politica menciona apenas "pelo tempo necessario" sem especificar prazos.', howToImprove: 'Definir prazos claros de retencao para cada tipo de dado ou os criterios usados para defini-los.' }] },
-    { id: 'f-05', criterionCode: 'C05', criterionName: 'Mencao ao compartilhamento', status: 'partial', score: 1.56, maxScore: 3.12, evidence: 'Cita "parceiros" sem especificar', explanation: 'O titular tem direito de saber com quem seus dados sao compartilhados.', lgpdReference: 'Art. 9, LGPD', recommendations: [{ id: 'r-05', title: 'Detalhar compartilhamento', priority: 'high', description: 'A politica usa termo generico "parceiros".', howToImprove: 'Listar categorias de terceiros e finalidades do compartilhamento.' }] },
-    { id: 'f-06', criterionCode: 'C06', criterionName: 'Mencao a bases legais', status: 'partial', score: 1.56, maxScore: 3.12, evidence: 'Menciona apenas consentimento', explanation: 'Toda operacao de tratamento deve ter uma base legal valida.', lgpdReference: 'Art. 7, LGPD', recommendations: [{ id: 'r-06', title: 'Listar todas as bases legais', priority: 'medium', description: 'Apenas consentimento e mencionado.', howToImprove: 'Incluir outras bases como execucao de contrato, obrigacao legal e legitimo interesse.' }] },
-    { id: 'f-07', criterionCode: 'C07', criterionName: 'Identificacao do controlador', status: 'absent', score: 0, maxScore: 3.12, evidence: null, explanation: 'O titular precisa saber quem e o responsavel pelo tratamento de seus dados.', lgpdReference: 'Art. 6, VII, LGPD', recommendations: [{ id: 'r-07', title: 'Identificar controlador', priority: 'high', description: 'Nao ha identificacao do controlador na politica.', howToImprove: 'Incluir nome da empresa, CNPJ e razao social.' }] },
-    { id: 'f-08', criterionCode: 'C08', criterionName: 'Canal de contato / DPO', status: 'partial', score: 1.56, maxScore: 3.12, evidence: 'E-mail generico contato@exemplo.com', explanation: 'A LGPD garante ao titular o direito de obter informacoes.', lgpdReference: 'Art. 9, LGPD', recommendations: [{ id: 'r-08', title: 'Criar canal dedicado', priority: 'medium', description: 'E-mail generico, nao dedicado a privacidade.', howToImprove: 'Criar e-mail privacidade@exemplo.com e indicar encarregado.' }] },
+    { id: 'f-05', criterionCode: 'C05', criterionName: 'Mencao ao compartilhamento', status: 'partial', score: 1.56, maxScore: 3.12, evidence: 'Cita "laboratorios, operadoras e parceiros de tecnologia" sem listar categorias de destinatarios por finalidade.', explanation: 'O titular tem direito de saber com quem seus dados sao compartilhados.', lgpdReference: 'Art. 9, LGPD', recommendations: [{ id: 'r-05', title: 'Detalhar compartilhamento', priority: 'high', description: 'A politica usa categorias amplas para terceiros envolvidos em consultas, exames e infraestrutura.', howToImprove: 'Listar categorias de terceiros e finalidades do compartilhamento, separando assistencia, faturamento, suporte tecnico e marketing.' }] },
+    { id: 'f-06', criterionCode: 'C06', criterionName: 'Mencao a bases legais', status: 'partial', score: 1.56, maxScore: 3.12, evidence: 'Menciona consentimento para newsletter, mas nao associa execucao de contrato, tutela da saude e obrigacao legal aos demais fluxos.', explanation: 'Toda operacao de tratamento deve ter uma base legal valida.', lgpdReference: 'Art. 7, LGPD', recommendations: [{ id: 'r-06', title: 'Mapear bases legais por finalidade', priority: 'medium', description: 'Bases legais aparecem de forma incompleta para agendamento, prontuario e cobranca.', howToImprove: 'Criar tabela com finalidade, dados utilizados, base legal, prazo de retencao e destinatarios.' }] },
+    { id: 'f-07', criterionCode: 'C07', criterionName: 'Identificacao do controlador', status: 'partial', score: 1.56, maxScore: 3.12, evidence: 'Rodape exibe nome fantasia da clinica, mas a politica nao informa razao social completa nem CNPJ.', explanation: 'O titular precisa saber quem e o responsavel pelo tratamento de seus dados.', lgpdReference: 'Art. 6, VII, LGPD', recommendations: [{ id: 'r-07', title: 'Identificar controlador', priority: 'high', description: 'A politica nao informa a pessoa juridica responsavel pelo portal.', howToImprove: 'Incluir razao social, CNPJ, endereco e canal formal do controlador.' }] },
+    { id: 'f-08', criterionCode: 'C08', criterionName: 'Canal de contato / DPO', status: 'partial', score: 1.56, maxScore: 3.12, evidence: 'E-mail atendimento@clinica-horizonte.test aparece no rodape, mas nao ha canal dedicado a privacidade.', explanation: 'A LGPD garante ao titular o direito de obter informacoes.', lgpdReference: 'Art. 9, LGPD', recommendations: [{ id: 'r-08', title: 'Criar canal dedicado', priority: 'medium', description: 'Canal atual mistura atendimento clinico, agenda e privacidade.', howToImprove: 'Criar privacidade@clinica-horizonte.test e indicar encarregado ou area responsavel.' }] },
 
     // COOKIES C09-C14
     { id: 'f-09', criterionCode: 'C09', criterionName: 'Existencia de banner de cookies', status: 'found', score: 4.17, maxScore: 4.17, evidence: 'Banner detectado com informacao sobre cookies', explanation: 'Cookies nao essenciais exigem consentimento previo.', lgpdReference: 'Art. 7, LGPD', recommendations: [] },
@@ -21,13 +29,13 @@ function makeFindings(): FindingItem[] {
     { id: 'f-11', criterionCode: 'C11', criterionName: 'Botao de recusar cookies', status: 'absent', score: 0, maxScore: 4.17, evidence: null, explanation: 'Recusar deve ser tao facil quanto aceitar.', lgpdReference: 'Art. 8, par. 5, LGPD', recommendations: [{ id: 'r-11', title: 'Adicionar botao de recusar', priority: 'high', description: 'Banner possui apenas botao de aceitar.', howToImprove: 'Incluir botao "Recusar cookies nao essenciais" visivel e acessivel.' }] },
     { id: 'f-12', criterionCode: 'C12', criterionName: 'Gerenciar preferencias', status: 'absent', score: 0, maxScore: 4.17, evidence: null, explanation: 'O titular deve poder escolher categorias.', lgpdReference: 'Art. 8, LGPD', recommendations: [{ id: 'r-12', title: 'Oferecer painel de preferencias', priority: 'medium', description: 'Sem opcao de gerenciar preferencias.', howToImprove: 'Implementar painel com categorias de cookies separadas.' }] },
     { id: 'f-13', criterionCode: 'C13', criterionName: 'Link para politica de cookies', status: 'found', score: 4.17, maxScore: 4.17, evidence: 'Link para /politica-de-privacidade no banner', explanation: 'O titular deve ter acesso facil a informacoes completas.', lgpdReference: 'Art. 9, LGPD', recommendations: [] },
-    { id: 'f-14', criterionCode: 'C14', criterionName: 'Cookies nao necessarios antes de consentimento', status: 'absent', score: 0, maxScore: 4.15, evidence: '_ga e _fbp carregados antes do consentimento', explanation: 'Carregar cookies nao essenciais antes do consentimento viola o principio do consentimento previo.', lgpdReference: 'Art. 7, LGPD', recommendations: [{ id: 'r-14', title: 'Bloquear cookies antes do consentimento', priority: 'high', description: 'Cookies de analytics e marketing carregam antes do aceite.', howToImprove: 'Configurar GTM e scripts para carregar apenas apos consentimento.' }] },
+    { id: 'f-14', criterionCode: 'C14', criterionName: 'Cookies nao necessarios antes de consentimento', status: 'absent', score: 0, maxScore: 4.15, evidence: '_ga, _fbp e hzt_adsid carregam antes de qualquer escolha no banner.', explanation: 'Carregar cookies nao essenciais antes do consentimento viola o principio do consentimento previo.', lgpdReference: 'Art. 7, LGPD', recommendations: [{ id: 'r-14', title: 'Bloquear cookies antes do consentimento', priority: 'high', description: 'Cookies de analytics e marketing carregam antes do aceite.', howToImprove: 'Configurar GTM e scripts para carregar apenas apos consentimento.' }] },
 
     // FORMS C15-C18
-    { id: 'f-15', criterionCode: 'C15', criterionName: 'Identificacao de campos de dados pessoais', status: 'found', score: 3.75, maxScore: 3.75, evidence: 'Formulario com nome, e-mail, telefone', explanation: 'Identificacao de dados pessoais coletados.', lgpdReference: 'Art. 5, I, LGPD', recommendations: [] },
-    { id: 'f-16', criterionCode: 'C16', criterionName: 'Minimizacao de dados', status: 'partial', score: 1.88, maxScore: 3.75, evidence: 'Campo CPF presente no formulario de contato', explanation: 'O principio da necessidade limita a coleta ao minimo necessario.', lgpdReference: 'Art. 6, III, LGPD', recommendations: [{ id: 'r-16', title: 'Revisar necessidade do CPF', priority: 'medium', description: 'CPF em formulario de contato parece excessivo.', howToImprove: 'Avaliar se o CPF e realmente necessario para a finalidade do formulario.' }] },
-    { id: 'f-17', criterionCode: 'C17', criterionName: 'Deteccao de dados sensiveis', status: 'found', score: 3.75, maxScore: 3.75, evidence: 'Nenhum dado sensivel detectado nos formularios', explanation: 'Dados sensiveis merecem protecao especial.', lgpdReference: 'Art. 5, II e Art. 11, LGPD', recommendations: [] },
-    { id: 'f-18', criterionCode: 'C18', criterionName: 'Aviso de privacidade no formulario', status: 'absent', score: 0, maxScore: 3.75, evidence: null, explanation: 'O titular deve ser informado sobre o tratamento no momento da coleta.', lgpdReference: 'Art. 9, LGPD', recommendations: [{ id: 'r-18', title: 'Adicionar aviso de privacidade', priority: 'medium', description: 'Formularios sem texto informativo sobre uso dos dados.', howToImprove: 'Adicionar texto "Seus dados serao usados apenas para..." proximo ao botao de envio.' }] },
+    { id: 'f-15', criterionCode: 'C15', criterionName: 'Identificacao de campos de dados pessoais', status: 'found', score: 3.75, maxScore: 3.75, evidence: 'Formulario de agendamento coleta nome, CPF, telefone, e-mail, convenio e especialidade desejada.', explanation: 'Identificacao de dados pessoais coletados.', lgpdReference: 'Art. 5, I, LGPD', recommendations: [] },
+    { id: 'f-16', criterionCode: 'C16', criterionName: 'Minimizacao de dados', status: 'partial', score: 1.88, maxScore: 3.75, evidence: 'Formulario de newsletter solicita data de nascimento e telefone, embora a finalidade declarada seja envio de conteudo preventivo.', explanation: 'O principio da necessidade limita a coleta ao minimo necessario.', lgpdReference: 'Art. 6, III, LGPD', recommendations: [{ id: 'r-16', title: 'Reduzir campos por finalidade', priority: 'medium', description: 'Campos extras aparecem em fluxos de baixa necessidade.', howToImprove: 'Manter apenas e-mail e consentimento na newsletter; solicitar dados adicionais somente quando indispensaveis ao atendimento.' }] },
+    { id: 'f-17', criterionCode: 'C17', criterionName: 'Deteccao de dados sensiveis', status: 'partial', score: 1.88, maxScore: 3.75, evidence: 'Campo "descreva seu sintoma" aparece no pre-agendamento sem aviso destacado sobre dado sensivel.', explanation: 'Dados sensiveis merecem protecao especial.', lgpdReference: 'Art. 5, II e Art. 11, LGPD', recommendations: [{ id: 'r-17', title: 'Tratar dados de saude como sensiveis', priority: 'high', description: 'O formulario pode receber informacoes sobre saude antes de contextualizar o titular.', howToImprove: 'Adicionar aviso especifico, restringir campo livre e explicar base legal e finalidade do tratamento.' }] },
+    { id: 'f-18', criterionCode: 'C18', criterionName: 'Aviso de privacidade no formulario', status: 'absent', score: 0, maxScore: 3.75, evidence: 'Botoes "Solicitar consulta" e "Entrar na newsletter" nao exibem aviso curto de privacidade.', explanation: 'O titular deve ser informado sobre o tratamento no momento da coleta.', lgpdReference: 'Art. 9, LGPD', recommendations: [{ id: 'r-18', title: 'Adicionar aviso de privacidade contextual', priority: 'medium', description: 'Formularios sem texto informativo sobre uso dos dados.', howToImprove: 'Adicionar texto curto junto aos botoes, com link para a politica e finalidade especifica de cada formulario.' }] },
 
     // RIGHTS C19-C24
     { id: 'f-19', criterionCode: 'C19', criterionName: 'Direito de acesso', status: 'found', score: 2.5, maxScore: 2.5, evidence: 'Mencao ao direito de acessar dados', explanation: 'O titular pode solicitar confirmacao e acesso aos seus dados.', lgpdReference: 'Art. 18, I e II, LGPD', recommendations: [] },
@@ -46,10 +54,10 @@ function makeFindings(): FindingItem[] {
     { id: 'f-28', criterionCode: 'C28', criterionName: 'Uso de HTTPS', status: 'found', score: 2.5, maxScore: 2.5, evidence: 'Certificado SSL valido detectado', explanation: 'HTTPS e o minimo esperado para protecao de dados.', lgpdReference: 'Art. 46, LGPD', recommendations: [] },
     { id: 'f-29', criterionCode: 'C29', criterionName: 'Formularios em paginas seguras', status: 'found', score: 2.5, maxScore: 2.5, evidence: 'Todos os formularios via HTTPS', explanation: 'Formularios devem estar em paginas seguras.', lgpdReference: 'Art. 46, LGPD', recommendations: [] },
     { id: 'f-30', criterionCode: 'C30', criterionName: 'Dados sensiveis expostos', status: 'found', score: 2.5, maxScore: 2.5, evidence: 'Nenhum dado sensivel exposto no codigo-fonte', explanation: 'Dados sensiveis expostos representam risco de violacao.', lgpdReference: 'Art. 46, LGPD', recommendations: [] },
-    { id: 'f-31', criterionCode: 'C31', criterionName: 'Scripts externos', status: 'absent', score: 0, maxScore: 2.5, evidence: 'Google Analytics, Facebook Pixel, Google Fonts', explanation: 'Scripts de terceiros podem coletar dados dos visitantes.', lgpdReference: 'Art. 46, LGPD', recommendations: [{ id: 'r-31', title: 'Revisar scripts de terceiros', priority: 'low', description: '3 scripts externos detectados.', howToImprove: 'Revisar necessidade de cada script e documentar a finalidade de cada um.' }] },
+    { id: 'f-31', criterionCode: 'C31', criterionName: 'Scripts externos', status: 'absent', score: 0, maxScore: 2.5, evidence: 'Google Analytics, Facebook Pixel, Hotjar e widget de chat carregados no primeiro acesso.', explanation: 'Scripts de terceiros podem coletar dados dos visitantes.', lgpdReference: 'Art. 46, LGPD', recommendations: [{ id: 'r-31', title: 'Revisar scripts de terceiros', priority: 'low', description: '4 scripts externos detectados em paginas de agendamento e conteudo.', howToImprove: 'Revisar necessidade de cada script, documentar finalidade e condicionar ferramentas nao essenciais ao consentimento.' }] },
 
     // LANGUAGE C32-C33
-    { id: 'f-32', criterionCode: 'C32', criterionName: 'Termos excessivamente genericos', status: 'partial', score: 1.25, maxScore: 2.5, evidence: 'Frases como "melhorar sua experiencia" e "conforme necessario"', explanation: 'Frases vagas violam o principio de transparencia.', lgpdReference: 'Art. 6, VI, LGPD', recommendations: [{ id: 'r-32', title: 'Substituir termos genericos', priority: 'medium', description: '2 frases vagas detectadas.', howToImprove: 'Substituir por descricoes especificas de dados, finalidades e procedimentos.' }] },
+    { id: 'f-32', criterionCode: 'C32', criterionName: 'Termos excessivamente genericos', status: 'partial', score: 1.25, maxScore: 2.5, evidence: 'Frases como "melhorar sua jornada de saude" e "pelo periodo necessario" aparecem sem criterio objetivo.', explanation: 'Frases vagas violam o principio de transparencia.', lgpdReference: 'Art. 6, VI, LGPD', recommendations: [{ id: 'r-32', title: 'Substituir termos genericos', priority: 'medium', description: '2 frases vagas detectadas em politica e banner.', howToImprove: 'Substituir por descricoes especificas de dados, finalidades, prazos e procedimentos.' }] },
     { id: 'f-33', criterionCode: 'C33', criterionName: 'Clareza e acessibilidade do texto', status: 'found', score: 2.5, maxScore: 2.5, evidence: 'Texto com linguagem moderadamente acessivel', explanation: 'A LGPD exige que informacoes sejam claras e acessiveis.', lgpdReference: 'Art. 9, par. 1, LGPD', recommendations: [] },
   ];
   return findings;
@@ -57,13 +65,13 @@ function makeFindings(): FindingItem[] {
 
 function makeCookies(): CookieItem[] {
   return [
-    { id: 'ck-1', name: 'sessionid', domain: 'demo.lgpdoc.test', type: 'necessary', origin: 'first_party', duration: 'session', loadedBeforeConsent: false, description: 'Cookie de sessao necessario para funcionamento do site.' },
-    { id: 'ck-2', name: 'csrftoken', domain: 'demo.lgpdoc.test', type: 'necessary', origin: 'first_party', duration: 'session', loadedBeforeConsent: false, description: 'Token de seguranca CSRF.' },
+    { id: 'ck-1', name: 'hzt_session', domain: 'demo.lgpdoc.test', type: 'necessary', origin: 'first_party', duration: 'session', loadedBeforeConsent: false, description: 'Cookie de sessao necessario para area de pacientes.' },
+    { id: 'ck-2', name: 'csrf_token', domain: 'demo.lgpdoc.test', type: 'necessary', origin: 'first_party', duration: 'session', loadedBeforeConsent: false, description: 'Token de seguranca CSRF.' },
     { id: 'ck-3', name: '_ga', domain: '.demo.lgpdoc.test', type: 'analytics', origin: 'first_party', duration: 'persistent', loadedBeforeConsent: true, description: 'Google Analytics - rastreamento de visitas.' },
-    { id: 'ck-4', name: '_gid', domain: '.demo.lgpdoc.test', type: 'analytics', origin: 'first_party', duration: 'persistent', loadedBeforeConsent: true, description: 'Google Analytics - identificador de sessao.' },
+    { id: 'ck-4', name: '_hjSession', domain: '.hotjar.com', type: 'analytics', origin: 'third_party', duration: 'persistent', loadedBeforeConsent: true, description: 'Hotjar - mapas de calor e gravacao de sessao.' },
     { id: 'ck-5', name: '_fbp', domain: '.facebook.com', type: 'marketing', origin: 'third_party', duration: 'persistent', loadedBeforeConsent: true, description: 'Facebook Pixel - rastreamento para publicidade.' },
-    { id: 'ck-6', name: '_gcl_au', domain: '.demo.lgpdoc.test', type: 'marketing', origin: 'first_party', duration: 'persistent', loadedBeforeConsent: true, description: 'Google Ads - conversao de anuncios.' },
-    { id: 'ck-7', name: 'pref_lang', domain: 'demo.lgpdoc.test', type: 'functional', origin: 'first_party', duration: 'persistent', loadedBeforeConsent: false, description: 'Preferencia de idioma do usuario.' },
+    { id: 'ck-6', name: 'hzt_adsid', domain: '.demo.lgpdoc.test', type: 'marketing', origin: 'first_party', duration: 'persistent', loadedBeforeConsent: true, description: 'Identificador de campanha de agendamento.' },
+    { id: 'ck-7', name: 'pref_specialty', domain: 'demo.lgpdoc.test', type: 'functional', origin: 'first_party', duration: 'persistent', loadedBeforeConsent: false, description: 'Preferencia de especialidade selecionada pelo visitante.' },
   ];
 }
 
@@ -71,16 +79,16 @@ function makeForms(): FormItem[] {
   return [
     {
       id: 'fm-1',
-      pageUrl: `${DEMO_SCAN_URL}/contato`,
+      pageUrl: `${DEMO_SCAN_URL}/agendamento`,
       fields: [
         { name: 'nome', type: 'text', label: 'Nome completo', isPersonalData: true, isSensitive: false, isRequired: true },
         { name: 'email', type: 'email', label: 'E-mail', isPersonalData: true, isSensitive: false, isRequired: true },
         { name: 'telefone', type: 'tel', label: 'Telefone', isPersonalData: true, isSensitive: false, isRequired: false },
         { name: 'cpf', type: 'text', label: 'CPF', isPersonalData: true, isSensitive: false, isRequired: false },
-        { name: 'mensagem', type: 'textarea', label: 'Mensagem', isPersonalData: false, isSensitive: false, isRequired: true },
+        { name: 'sintomas', type: 'textarea', label: 'Descreva seus sintomas', isPersonalData: true, isSensitive: true, isRequired: false },
       ],
-      sensitiveFields: [],
-      excessiveFields: ['cpf'],
+      sensitiveFields: ['sintomas'],
+      excessiveFields: ['cpf', 'sintomas'],
       hasSecureAction: true,
       privacyNotice: false,
     },
@@ -90,9 +98,10 @@ function makeForms(): FormItem[] {
       fields: [
         { name: 'nome', type: 'text', label: 'Nome', isPersonalData: true, isSensitive: false, isRequired: true },
         { name: 'email', type: 'email', label: 'E-mail', isPersonalData: true, isSensitive: false, isRequired: true },
+        { name: 'data_nascimento', type: 'date', label: 'Data de nascimento', isPersonalData: true, isSensitive: false, isRequired: false },
       ],
       sensitiveFields: [],
-      excessiveFields: [],
+      excessiveFields: ['data_nascimento'],
       hasSecureAction: true,
       privacyNotice: true,
     },
@@ -133,7 +142,10 @@ export function getMockReport(scanId: string, url: string): ReportResponse {
   return {
     scan: {
       id: scanId,
-      url,
+      url: DEMO_SCAN_URL,
+      siteName: DEMO_SITE_NAME,
+      siteSummary: DEMO_SITE_SUMMARY,
+      detectedPages: DEMO_PAGES,
       score: normalizedScore,
       riskLevel: normalizedScore >= 90 ? 'good' : normalizedScore >= 70 ? 'low' : normalizedScore >= 40 ? 'medium' : 'high',
       completedAt: new Date().toISOString(),
@@ -141,6 +153,6 @@ export function getMockReport(scanId: string, url: string): ReportResponse {
     categories,
     cookies: makeCookies(),
     forms: makeForms(),
-    legalDisclaimer: 'Esta analise tem carater exclusivamente educativo e nao constitui parecer juridico. A pontuacao gerada nao representa certificacao de conformidade com a LGPD. Para avaliacao juridica completa, consulte um profissional especializado em protecao de dados.',
+    legalDisclaimer: 'Esta analise usa dados simulados de um site ficticio para demonstracao do LGPDoc. O resultado tem carater exclusivamente educativo e nao constitui parecer juridico, certificacao de conformidade ou avaliacao real da LGPD.',
   };
 }

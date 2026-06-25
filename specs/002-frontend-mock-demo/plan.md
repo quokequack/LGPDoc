@@ -69,7 +69,7 @@ web/
 │   ├── views/                    # Updated with shadcn components
 │   │   ├── HomeView.vue
 │   │   ├── ScanProgressView.vue
-│   │   ├── ReportView.vue
+│   │   ├── ResultadoView.vue
 │   │   ├── CategoryDetailView.vue
 │   │   ├── GlossaryView.vue
 │   │   └── HistoryView.vue

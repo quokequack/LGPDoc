@@ -13,7 +13,7 @@ const steps = [
     { key: 'cookies', label: 'Verificando cookies...' },
     { key: 'forms', label: 'Analisando formularios...' },
     { key: 'security', label: 'Verificando seguranca...' },
-    { key: 'scoring', label: 'Calculando pontuacao...' },
+    { key: 'scoring', label: 'Montando o resultado demonstrativo' },
 ];
 const elapsedMs = ref(0);
 let timer = null;
@@ -21,7 +21,7 @@ onMounted(() => {
     timer = setInterval(() => { elapsedMs.value += 100; }, 100);
     scanStore.startPolling(scanId, (scan) => {
         if (scan.status === 'completed') {
-            setTimeout(() => router.push({ name: 'report', params: { id: scanId } }), 600);
+            setTimeout(() => router.push({ name: 'resultado' }), 600);
         }
     });
 });

@@ -1,19 +1,15 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router';
-import { useReport } from '@/composables/useReport';
 import ScoreGauge from '@/components/report/ScoreGauge.vue';
 import RiskBadge from '@/components/report/RiskBadge.vue';
 import CategorySummary from '@/components/report/CategorySummary.vue';
 import FindingCard from '@/components/report/FindingCard.vue';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer.vue';
 import Badge from '@/components/ui/Badge.vue';
-import Skeleton from '@/components/ui/Skeleton.vue';
-import type { RiskLevel } from '@/types/scan.types';
 import { CATEGORY_LABELS, COOKIE_TYPE_LABELS } from '@/types/report.types';
+import { getMockReport } from '@/mock/reports';
+import { DEMO_SCAN_URL } from '@/mock/scans';
 
-const route = useRoute();
-const scanId = route.params.id as string;
-const { report, isLoading, error } = useReport(scanId);
+const report = getMockReport('resultado-demo', DEMO_SCAN_URL);
 
 const CATEGORY_ARTICLE: Record<string, string> = {
   privacy_policy: 'Art. 6º · 9º',
@@ -33,26 +29,12 @@ function fmtDate(d: string) {
 </script>
 
 <template>
-  <!-- Carregando -->
-  <div v-if="isLoading" class="grid gap-8 lg:grid-cols-[18rem_1fr]">
-    <div class="space-y-4">
-      <Skeleton class="mx-auto h-44 w-44 rounded-full" />
-      <Skeleton class="h-40 w-full" />
-    </div>
-    <div class="space-y-4">
-      <Skeleton class="h-10 w-72" />
-      <Skeleton v-for="i in 5" :key="i" class="h-32 w-full" />
-    </div>
-  </div>
-
-  <div v-else-if="error" class="py-16 text-center text-risk-high">{{ error }}</div>
-
-  <div v-else-if="report" class="grid gap-8 lg:grid-cols-[18rem_1fr]">
-    <!-- Trilho do laudo: selo + índice de conformidade -->
+  <div class="grid gap-8 lg:grid-cols-[18rem_1fr]">
+    <!-- Trilho do resultado: selo + índice de conformidade -->
     <aside class="space-y-5 lg:sticky lg:top-20 lg:self-start">
       <div class="sheet flex flex-col items-center gap-3 p-6">
-        <ScoreGauge :score="report.scan.score" :risk-level="report.scan.riskLevel as RiskLevel" size="lg" />
-        <RiskBadge :risk-level="report.scan.riskLevel as RiskLevel" />
+        <ScoreGauge :score="report.scan.score" :risk-level="report.scan.riskLevel" size="lg" />
+        <RiskBadge :risk-level="report.scan.riskLevel" />
       </div>
       <div class="sheet space-y-4 p-5">
         <p class="eyebrow">Síntese por categoria</p>
@@ -60,15 +42,32 @@ function fmtDate(d: string) {
       </div>
     </aside>
 
-    <!-- Corpo do laudo -->
+    <!-- Corpo do resultado -->
     <div class="space-y-10">
       <header class="space-y-2 border-b border-border pb-5">
-        <p class="eyebrow">Laudo de conformidade · LGPD</p>
-        <h1 class="font-display text-3xl font-extrabold tracking-tight">Relatório de avaliação</h1>
+        <p class="eyebrow">Resultado demonstrativo · LGPD</p>
+        <h1 class="font-display text-3xl font-extrabold tracking-tight">{{ report.scan.siteName }}</h1>
+        <p class="prose-lei max-w-2xl text-sm leading-relaxed text-muted-foreground">{{ report.scan.siteSummary }}</p>
         <a :href="report.scan.url" target="_blank" rel="noopener"
            class="block break-all font-mono text-sm text-primary hover:underline">{{ report.scan.url }}</a>
         <p class="font-mono text-xs text-muted-foreground">Emitido em {{ fmtDate(report.scan.completedAt) }}</p>
       </header>
+
+      <section class="sheet space-y-3 p-5">
+        <div class="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 class="font-display text-lg font-bold">Escopo analisado</h2>
+          <span class="eyebrow">{{ report.scan.detectedPages.length }} páginas mockadas</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <Badge v-for="page in report.scan.detectedPages" :key="page" variant="outline">
+            {{ page.replace(report.scan.url, '') || '/' }}
+          </Badge>
+        </div>
+        <p class="prose-lei text-xs leading-relaxed text-muted-foreground">
+          Este cenário fictício combina política de privacidade, cookies, formulários de agendamento,
+          área de paciente e newsletter para demonstrar as principais capacidades da ferramenta.
+        </p>
+      </section>
 
       <LegalDisclaimer />
 

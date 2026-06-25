@@ -5,6 +5,7 @@ const props = withDefaults(defineProps(), {
     variant: 'default',
     size: 'default',
     as: 'button',
+    asChild: false,
 });
 const variantClasses = {
     default: 'border-2 border-foreground bg-primary text-primary-foreground shadow-[4px_4px_0_hsl(var(--foreground))] hover:translate-x-0.5 hover:translate-y-0.5 hover:shadow-[2px_2px_0_hsl(var(--foreground))]',
@@ -34,13 +35,13 @@ const __VLS_0 = {}.Primitive;
 /** @type {[typeof __VLS_components.Primitive, typeof __VLS_components.Primitive, ]} */ ;
 // @ts-ignore
 const __VLS_1 = __VLS_asFunctionalComponent(__VLS_0, new __VLS_0({
-    as: (__VLS_ctx.as),
-    asChild: (__VLS_ctx.asChild),
+    as: (__VLS_ctx.props.as),
+    asChild: (__VLS_ctx.props.asChild),
     ...{ class: (__VLS_ctx.classes) },
 }));
 const __VLS_2 = __VLS_1({
-    as: (__VLS_ctx.as),
-    asChild: (__VLS_ctx.asChild),
+    as: (__VLS_ctx.props.as),
+    asChild: (__VLS_ctx.props.asChild),
     ...{ class: (__VLS_ctx.classes) },
 }, ...__VLS_functionalComponentArgsRest(__VLS_1));
 var __VLS_4 = {};
@@ -54,6 +55,7 @@ const __VLS_self = (await import('vue')).defineComponent({
     setup() {
         return {
             Primitive: Primitive,
+            props: props,
             classes: classes,
         };
     },

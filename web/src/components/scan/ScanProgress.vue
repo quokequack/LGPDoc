@@ -16,7 +16,7 @@ const steps = [
   { key: 'cookies', label: 'Inspecionando cookies' },
   { key: 'forms', label: 'Analisando formulários' },
   { key: 'security', label: 'Verificando segurança' },
-  { key: 'scoring', label: 'Emitindo o laudo' },
+  { key: 'scoring', label: 'Montando o resultado demonstrativo' },
 ];
 
 const elapsedMs = ref(0);
@@ -26,7 +26,7 @@ onMounted(() => {
   timer = setInterval(() => { elapsedMs.value += 100; }, 100);
   scanStore.startPolling(scanId, (scan) => {
     if (scan.status === 'completed') {
-      setTimeout(() => router.push({ name: 'report', params: { id: scanId } }), 600);
+      setTimeout(() => router.push({ name: 'resultado' }), 600);
     }
   });
 });

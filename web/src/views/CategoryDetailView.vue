@@ -1,29 +1,27 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useRoute, RouterLink } from 'vue-router';
-import { useReport } from '@/composables/useReport';
 import FindingCard from '@/components/report/FindingCard.vue';
 import Badge from '@/components/ui/Badge.vue';
 import { ArrowLeft } from '@lucide/vue';
 import { CATEGORY_LABELS } from '@/types/report.types';
+import { getMockReport } from '@/mock/reports';
+import { DEMO_SCAN_URL } from '@/mock/scans';
 
 const route = useRoute();
-const scanId = route.params.id as string;
 const category = route.params.category as string;
-const { report, isLoading, error } = useReport(scanId);
+const report = getMockReport('resultado-demo', DEMO_SCAN_URL);
 
-const cat = computed(() => report.value?.categories.find((c) => c.category === category) || null);
+const cat = computed(() => report.categories.find((c) => c.category === category) || null);
 </script>
 
 <template>
   <div class="space-y-8">
-    <div v-if="isLoading" class="py-16 text-center text-muted-foreground">Carregando…</div>
-    <div v-else-if="error" class="py-16 text-center text-risk-high">{{ error }}</div>
-    <template v-else-if="cat">
+    <template v-if="cat">
       <header class="space-y-2 border-b border-border pb-5">
-        <RouterLink :to="{ name: 'report', params: { id: scanId } }"
+        <RouterLink :to="{ name: 'resultado' }"
                     class="inline-flex items-center gap-1.5 font-mono text-xs text-primary hover:underline">
-          <ArrowLeft class="h-3.5 w-3.5" /> Voltar ao laudo
+          <ArrowLeft class="h-3.5 w-3.5" /> Voltar ao resultado
         </RouterLink>
         <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
           <h1 class="font-display text-3xl font-extrabold tracking-tight">{{ CATEGORY_LABELS[cat.category] || cat.category }}</h1>

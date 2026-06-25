@@ -63,7 +63,7 @@
 - [x] T019 [US1] Rebuild HomeView with shadcn Card, Input, Button components and mock scan trigger in `web/src/views/HomeView.vue`
 - [x] T020 [US1] Rebuild UrlInput component with shadcn Input + Button, enter-key submit, validation feedback in `web/src/components/scan/UrlInput.vue`
 - [x] T021 [US1] Rebuild ScanProgressView with shadcn Progress bar, simulated step indicators, auto-redirect after ~4s in `web/src/components/scan/ScanProgress.vue`
-- [x] T022 [US1] Rebuild ReportView with all sections using mock report data, shadcn Card, Badge, Table in `web/src/views/ReportView.vue`
+- [x] T022 [US1] Rebuild ResultadoView with all sections using a fictional-site mock result, shadcn Card, Badge, Table in `web/src/views/ResultadoView.vue`
 - [x] T023 [P] [US1] Rebuild ScoreGauge with SVG circular progress and animated dashoffset in `web/src/components/report/ScoreGauge.vue`
 - [x] T024 [P] [US1] Rebuild RiskBadge with shadcn Badge variants (destructive/warning/success) in `web/src/components/report/RiskBadge.vue`
 - [x] T025 [P] [US1] Rebuild CategorySummary with shadcn Card, animated progress bars per category in `web/src/components/report/CategorySummary.vue`
@@ -111,7 +111,7 @@
 - [ ] T041 [US4] Add smooth CSS transitions to progress bar (width easing) and step checkmarks (scale + opacity) in `web/src/components/scan/ScanProgress.vue`
 - [ ] T042 [US4] Add hover transitions to all interactive elements: cards (`hover:shadow-md transition-shadow`), table rows (`hover:bg-accent transition-colors`), buttons (`hover:scale-[1.02] transition-transform`)
 - [ ] T043 [US4] Add fade-in animation for glossary search results using `<TransitionGroup name="list">` with staggered children in `web/src/views/GlossaryView.vue`
-- [ ] T044 [US4] Add skeleton loading states with shadcn Skeleton component for report and history pages while mock data "loads" in `web/src/views/ReportView.vue` and `web/src/views/HistoryView.vue`
+- [ ] T044 [US4] Add skeleton loading states with shadcn Skeleton component for result and history pages while mock data "loads" in `web/src/views/ResultadoView.vue` and `web/src/views/HistoryView.vue`
 
 **Checkpoint**: All animations work smoothly. No jank or flicker. 60fps during transitions.
 

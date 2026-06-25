@@ -12,7 +12,7 @@
 
 ### User Story 1 — Navegação completa simulada com dados mockados (Priority: P1)
 
-O usuário acessa a aplicação e interage com todas as telas do fluxo principal (Home → Scan em andamento → Relatório → Glossário → Histórico) como se o sistema real estivesse funcionando, mas utilizando dados pré-definidos (mockados) no frontend, sem dependência do backend.
+O usuário acessa a aplicação e interage com todas as telas do fluxo principal (Home → Scan em andamento → Resultado → Glossário → Histórico) como se o sistema real estivesse funcionando, mas utilizando dados pré-definidos (mockados) no frontend, sem dependência do backend.
 
 **Why this priority**: É o core do protótipo — demonstra o fluxo completo do produto em funcionamento, permitindo validação de UX, apresentação para stakeholders e testes de usabilidade sem necessidade de infraestrutura de backend.
 
@@ -109,7 +109,7 @@ A interface utiliza animações e transições para melhorar a percepção de fl
 
 ### Measurable Outcomes
 
-- **SC-001**: O usuário consegue completar o fluxo completo (Home → Scan → Relatório) em menos de 15 segundos sem qualquer erro de console.
+- **SC-001**: O usuário consegue completar o fluxo completo (Home → Scan → Resultado) em menos de 15 segundos sem qualquer erro de console.
 - **SC-002**: A alternância de tema ocorre em menos de 300ms com transição visual perceptível e sem flicker.
 - **SC-003**: A interface atinge score mínimo de 90 no Lighthouse Accessibility audit em ambos os temas.
 - **SC-004**: Todos os 10+ scans do histórico e 33 findings do relatório são exibidos corretamente sem dados vazios ou placeholders visíveis.

@@ -7,14 +7,14 @@ import Badge from '@/components/ui/Badge.vue';
 import Button from '@/components/ui/Button.vue';
 import Skeleton from '@/components/ui/Skeleton.vue';
 import { ChevronLeft, ChevronRight, ArrowRight } from '@lucide/vue';
-import type { RiskLevel, ScanListItem } from '@/types/scan.types';
+import type { ScanListItem } from '@/types/scan.types';
 
 const router = useRouter();
 const { scans, total, totalPages, currentPage, isLoading, error, loadHistory, prevPage, nextPage } = useScanHistory();
 
 onMounted(() => loadHistory(1));
 
-function viewReport(s: ScanListItem) { if (s.status === 'completed') router.push({ name: 'report', params: { id: s.id } }); }
+function viewReport(s: ScanListItem) { if (s.status === 'completed') router.push({ name: 'resultado' }); }
 function fmtDate(d: string) { return new Date(d).toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' }); }
 
 const statusMap: Record<string, { label: string; variant: 'good' | 'default' | 'outline' | 'high' }> = {
@@ -30,7 +30,7 @@ const statusMap: Record<string, { label: string; variant: 'good' | 'default' | '
     <header class="space-y-2 border-b border-border pb-5">
       <p class="eyebrow">Registro de análises</p>
       <h1 class="font-display text-3xl font-extrabold tracking-tight">Histórico</h1>
-      <p v-if="!isLoading && !error" class="font-mono text-xs text-muted-foreground">{{ total }} laudo(s) emitido(s)</p>
+      <p v-if="!isLoading && !error" class="font-mono text-xs text-muted-foreground">{{ total }} resultado(s) emitido(s)</p>
     </header>
 
     <div v-if="isLoading" class="space-y-2">
@@ -68,7 +68,7 @@ const statusMap: Record<string, { label: string; variant: 'good' | 'default' | '
             <td class="max-w-[220px] truncate px-4 py-3 font-mono text-xs" :title="s.url">{{ s.url }}</td>
             <td class="px-4 py-3"><Badge :variant="statusMap[s.status]?.variant || 'outline'">{{ statusMap[s.status]?.label || s.status }}</Badge></td>
             <td class="px-4 py-3 text-right font-mono font-semibold tabular-nums">{{ s.score !== null ? Math.round(s.score) : '—' }}</td>
-            <td class="px-4 py-3"><RiskBadge v-if="s.riskLevel" :risk-level="s.riskLevel as RiskLevel" /></td>
+            <td class="px-4 py-3"><RiskBadge v-if="s.riskLevel" :risk-level="s.riskLevel" /></td>
             <td class="whitespace-nowrap px-4 py-3 font-mono text-xs text-muted-foreground">{{ fmtDate(s.createdAt) }}</td>
             <td class="px-4 py-3 text-right">
               <Button v-if="s.status === 'completed'" size="sm" variant="outline" @click.stop="viewReport(s)">Abrir</Button>

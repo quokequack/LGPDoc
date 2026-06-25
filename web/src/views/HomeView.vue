@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import UrlInput from '@/components/scan/UrlInput.vue';
 import LegalDisclaimer from '@/components/layout/LegalDisclaimer.vue';
-import ScoreGauge from '@/components/report/ScoreGauge.vue';
 import {
   Globe, ScanSearch, FileCheck2,
   FileText, Cookie, ClipboardList, Scale, Building2, ShieldCheck, Languages,
@@ -10,7 +9,7 @@ import {
 const steps = [
   { n: '01', icon: Globe, title: 'Informe a URL', desc: 'Cole o endereço público de um site brasileiro que você queira avaliar.' },
   { n: '02', icon: ScanSearch, title: 'Perícia automática', desc: 'Lemos política, cookies, formulários e segurança — só o que é público.' },
-  { n: '03', icon: FileCheck2, title: 'Receba o laudo', desc: 'Pontuação, nível de risco e correções, artigo por artigo da LGPD.' },
+  { n: '03', icon: FileCheck2, title: 'Veja o resultado', desc: 'Pontuação, nível de risco e correções, artigo por artigo da LGPD.' },
 ];
 
 const categories = [
@@ -26,30 +25,22 @@ const categories = [
 
 <template>
   <div class="space-y-16">
-    <!-- Hero: abertura do laudo -->
-    <section class="grid items-center gap-10 lg:grid-cols-[1.4fr_1fr]">
+    <!-- Hero: abertura do resultado -->
+    <section class="mx-auto max-w-3xl py-4 text-center">
       <div class="space-y-6">
-        <p class="eyebrow">Laudo educativo · Lei nº 13.709/2018</p>
+        <p class="eyebrow">Resultado educativo · Lei nº 13.709/2018</p>
         <h1 class="font-display text-4xl font-extrabold leading-[1.05] tracking-tight sm:text-5xl">
           Seu site fala
           <span class="text-primary">a língua da LGPD?</span>
         </h1>
         <p class="prose-lei max-w-xl text-lg leading-relaxed text-muted-foreground">
-          Informe um endereço e o LGPDoc emite um laudo didático: o que está conforme, o que falta
+          Informe um endereço e o LGPDoc emite um resultado didático: o que está conforme, o que falta
           e como corrigir — cada ponto ligado ao artigo da lei que o sustenta.
         </p>
-        <div class="sheet max-w-xl p-5 sm:p-6">
+        <div class="sheet mx-auto max-w-2xl p-5 text-left sm:p-6">
           <UrlInput />
         </div>
-        <LegalDisclaimer class="max-w-xl" />
-      </div>
-
-      <!-- Signature: selo de exemplo -->
-      <div class="flex flex-col items-center gap-3">
-        <ScoreGauge :score="58" risk-level="medium" size="lg" />
-        <p class="font-mono text-[0.65rem] uppercase tracking-[0.18em] text-muted-foreground">
-          Exemplo de selo de avaliação
-        </p>
+        <LegalDisclaimer class="mx-auto max-w-2xl text-left" />
       </div>
     </section>
 
@@ -71,7 +62,7 @@ const categories = [
       </ol>
     </section>
 
-    <!-- O que é analisado — espelha a coluna de artigos do laudo -->
+    <!-- O que é analisado — espelha a coluna de artigos do resultado -->
     <section class="space-y-6">
       <header class="flex items-end justify-between gap-4 border-b border-border pb-3">
         <h2 class="font-display text-xl font-bold">O que é analisado</h2>

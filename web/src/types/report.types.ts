@@ -4,6 +4,9 @@ export interface ReportResponse {
   scan: {
     id: string;
     url: string;
+    siteName: string;
+    siteSummary: string;
+    detectedPages: string[];
     score: number;
     riskLevel: RiskLevel;
     completedAt: string;

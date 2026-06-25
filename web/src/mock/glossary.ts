@@ -101,7 +101,16 @@ export function searchMockGlossary(query: string, delayMs = 300): Promise<Glossa
   return new Promise((resolve) => {
     const lower = query.toLowerCase().trim();
     const filtered = lower
-      ? GLOSSARY_TERMS.filter((t) => t.term.toLowerCase().includes(lower))
+      ? GLOSSARY_TERMS.filter((t) => {
+        const searchable = [
+          t.term,
+          t.definition,
+          t.lgpdArticle || '',
+          ...t.relatedTerms,
+        ].join(' ').toLowerCase();
+
+        return searchable.includes(lower);
+      })
       : GLOSSARY_TERMS;
 
     setTimeout(() => resolve(filtered), delayMs);

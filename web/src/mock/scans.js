@@ -1,6 +1,9 @@
 export const DEMO_SCAN_URL = 'https://demo.lgpdoc.test';
+export const DEMO_SITE_NAME = 'Clínica Horizonte Bem-Estar';
+export const DEMO_SITE_SUMMARY = 'Portal fictício de agendamento médico, newsletter de saúde e área de pacientes.';
 const URL_POOL = [
     DEMO_SCAN_URL,
+    'https://clinica-horizonte.test',
     'https://escolaexemplo.edu.br',
     'https://lojavirtual.com.br',
     'https://clinica.saude.gov.br',
@@ -56,11 +59,11 @@ export function generateMockScanList(count) {
 export function getMockScanProgress(url = DEMO_SCAN_URL, delayMs = 4000) {
     return new Promise((resolve) => {
         const scanId = crypto.randomUUID();
-        const score = url === DEMO_SCAN_URL ? 52.4 : randomScore();
+        const score = 48.8;
         setTimeout(() => {
             resolve({
                 id: scanId,
-                url,
+                url: DEMO_SCAN_URL,
                 status: 'completed',
                 score,
                 riskLevel: scoreToRisk(score),

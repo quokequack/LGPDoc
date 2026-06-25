@@ -5,9 +5,8 @@ import FindingCard from '@/components/report/FindingCard.vue';
 import Badge from '@/components/ui/Badge.vue';
 import { CATEGORY_LABELS } from '@/types/report.types';
 const route = useRoute();
-const scanId = route.params.id;
 const category = route.params.category;
-const { report, isLoading, error } = useReport(scanId);
+const { report, isLoading, error } = useReport();
 const cat = computed(() => report?.categories.find((c) => c.category === category) || null);
 debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
 const __VLS_ctx = {};

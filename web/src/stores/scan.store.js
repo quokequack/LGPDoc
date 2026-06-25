@@ -14,8 +14,7 @@ export const useScanStore = defineStore('scan', () => {
         isLoading.value = true;
         error.value = null;
         try {
-            const elapsed = ref(0);
-            currentScan.value = {
+            const scan = {
                 id: crypto.randomUUID(),
                 url,
                 status: 'pending',
@@ -26,33 +25,53 @@ export const useScanStore = defineStore('scan', () => {
                 errorMessage: null,
                 createdAt: new Date().toISOString(),
             };
-            // Simulate progress: pending → running → completed
+            currentScan.value = scan;
+            isLoading.value = false;
+            // Simulate progress: pending -> running -> completed.
             setTimeout(() => {
-                if (currentScan.value) {
+                if (currentScan.value?.id === scan.id) {
                     currentScan.value = { ...currentScan.value, status: 'running' };
                 }
             }, 300);
-            const result = await getMockScanProgress(url, 4000);
-            currentScan.value = result;
-            return result;
+            getMockScanProgress(url, 4000)
+                .then((result) => {
+                if (currentScan.value?.id === scan.id) {
+                    currentScan.value = { ...result, id: scan.id };
+                }
+            })
+                .catch((e) => {
+                if (currentScan.value?.id === scan.id) {
+                    currentScan.value = {
+                        ...currentScan.value,
+                        status: 'failed',
+                        errorMessage: e instanceof Error ? e.message : 'Erro ao iniciar analise',
+                    };
+                }
+                error.value = e instanceof Error ? e.message : 'Erro ao iniciar analise';
+            });
+            return scan;
         }
         catch (e) {
             error.value = e instanceof Error ? e.message : 'Erro ao iniciar analise';
             throw e;
         }
         finally {
-            isLoading.value = false;
+            if (!currentScan.value)
+                isLoading.value = false;
         }
     }
     function startPolling(scanId, onComplete) {
         stopPolling();
-        pollingTimer = setInterval(() => {
-            if (currentScan.value?.status === 'completed' || currentScan.value?.status === 'failed') {
+        const completeIfReady = () => {
+            if (currentScan.value?.id === scanId &&
+                (currentScan.value.status === 'completed' || currentScan.value.status === 'failed')) {
                 stopPolling();
                 if (onComplete && currentScan.value)
                     onComplete(currentScan.value);
             }
-        }, 500);
+        };
+        completeIfReady();
+        pollingTimer = setInterval(completeIfReady, 500);
     }
     function stopPolling() {
         if (pollingTimer) {

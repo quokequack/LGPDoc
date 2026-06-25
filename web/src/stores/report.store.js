@@ -9,6 +9,7 @@ export const useReportStore = defineStore('report', () => {
     async function fetchReport(scanId, url = DEMO_SCAN_URL) {
         isLoading.value = true;
         error.value = null;
+        report.value = null;
         try {
             // Simulate network delay
             await new Promise((r) => setTimeout(r, 400));
@@ -16,7 +17,7 @@ export const useReportStore = defineStore('report', () => {
             return report.value;
         }
         catch (e) {
-            error.value = e instanceof Error ? e.message : 'Erro ao carregar relatorio';
+            error.value = e instanceof Error ? e.message : 'Erro ao carregar resultado';
             throw e;
         }
         finally {
