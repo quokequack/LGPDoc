@@ -3,17 +3,17 @@ import LegalDisclaimer from '@/components/layout/LegalDisclaimer.vue';
 import Card from '@/components/ui/Card.vue';
 import { Shield, Search, BookOpen, AlertTriangle, FileText, Globe } from '@lucide/vue';
 const items = [
-    { icon: Globe, title: '1. Informe a URL', desc: 'Cole o endereco de um site que deseja analisar.' },
-    { icon: Search, title: '2. Analise automatica', desc: 'O scanner verifica politica de privacidade, cookies, formularios e seguranca.' },
-    { icon: FileText, title: '3. Receba o relatorio', desc: 'Visualize pontuacao, riscos e recomendacoes educativas.' },
+    { icon: Globe, title: '1. Informe a URL', desc: 'Cole o endereço de um site que deseja analisar.' },
+    { icon: Search, title: '2. Análise automatica', desc: 'O scanner verifica política de privacidade, cookies, formulários e segurança.' },
+    { icon: FileText, title: '3. Receba o relatório', desc: 'Visualize pontuação, riscos e recomendacoes educativas.' },
 ];
 const categories = [
-    { icon: Shield, title: 'Politica de Privacidade', desc: 'Verifica presenca e completude da politica.' },
+    { icon: Shield, title: 'Política de Privacidade', desc: 'Verifica presenca e completude da política.' },
     { icon: Globe, title: 'Cookies', desc: 'Detecta banners e classifica cookies.' },
-    { icon: BookOpen, title: 'Formularios', desc: 'Analisa campos de dados pessoais e sensiveis.' },
+    { icon: BookOpen, title: 'Formulários', desc: 'Analisa campos de dados pessoais e sensíveis.' },
     { icon: FileText, title: 'Direitos do Titular', desc: 'Verifica mencão aos direitos previstos na LGPD.' },
-    { icon: Shield, title: 'Seguranca', desc: 'Verifica HTTPS e scripts externos.' },
-    { icon: AlertTriangle, title: 'Linguagem', desc: 'Avalia clareza e termos genericos.' },
+    { icon: Shield, title: 'Segurança', desc: 'Verifica HTTPS e scripts externos.' },
+    { icon: AlertTriangle, title: 'Linguagem', desc: 'Avalia clareza e termos genéricos.' },
 ];
 debugger; /* PartiallyEnd: #3632/scriptSetup.vue */
 const __VLS_ctx = {};

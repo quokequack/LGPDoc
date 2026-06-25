@@ -9,10 +9,10 @@ const scanStore = useScanStore();
 const scanId = route.params.id;
 const steps = [
     { key: 'fetching', label: 'Acessando o site...' },
-    { key: 'privacy', label: 'Analisando politica de privacidade...' },
+    { key: 'privacy', label: 'Analisando política de privacidade...' },
     { key: 'cookies', label: 'Verificando cookies...' },
-    { key: 'forms', label: 'Analisando formularios...' },
-    { key: 'security', label: 'Verificando seguranca...' },
+    { key: 'forms', label: 'Analisando formulários...' },
+    { key: 'security', label: 'Verificando segurança...' },
     { key: 'scoring', label: 'Montando o resultado demonstrativo' },
 ];
 const elapsedMs = ref(0);

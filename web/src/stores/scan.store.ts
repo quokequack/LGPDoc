@@ -49,15 +49,15 @@ export const useScanStore = defineStore('scan', () => {
             currentScan.value = {
               ...currentScan.value,
               status: 'failed',
-              errorMessage: e instanceof Error ? e.message : 'Erro ao iniciar analise',
+              errorMessage: e instanceof Error ? e.message : 'Erro ao iniciar análise',
             };
           }
-          error.value = e instanceof Error ? e.message : 'Erro ao iniciar analise';
+          error.value = e instanceof Error ? e.message : 'Erro ao iniciar análise';
         });
 
       return scan;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Erro ao iniciar analise';
+      error.value = e instanceof Error ? e.message : 'Erro ao iniciar análise';
       throw e;
     } finally {
       if (!currentScan.value) isLoading.value = false;
@@ -97,7 +97,7 @@ export const useScanStore = defineStore('scan', () => {
       totalPages.value = Math.ceil(all.length / limit);
       currentPage.value = page;
     } catch (e) {
-      error.value = e instanceof Error ? e.message : 'Erro ao carregar historico';
+      error.value = e instanceof Error ? e.message : 'Erro ao carregar histórico';
     } finally {
       isLoading.value = false;
     }

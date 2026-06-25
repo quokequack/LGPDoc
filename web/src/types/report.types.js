@@ -1,17 +1,17 @@
 export const CATEGORY_LABELS = {
-    privacy_policy: 'Politica de Privacidade',
+    privacy_policy: 'Política de Privacidade',
     cookies: 'Cookies',
-    forms: 'Formularios',
+    forms: 'Formulários',
     rights: 'Direitos do Titular',
     controller: 'Controlador e Contato',
-    security: 'Seguranca Basica',
+    security: 'Segurança Básica',
     language: 'Linguagem Clara',
 };
 export const RISK_LEVEL_LABELS = {
     high: 'Risco Alto',
-    medium: 'Risco Medio',
+    medium: 'Risco Médio',
     low: 'Risco Baixo',
-    good: 'Boas Praticas Aparentes',
+    good: 'Boas Práticas Aparentes',
 };
 export const FINDING_STATUS_LABELS = {
     found: 'Encontrado',
@@ -20,12 +20,12 @@ export const FINDING_STATUS_LABELS = {
 };
 export const PRIORITY_LABELS = {
     high: 'Alta',
-    medium: 'Media',
+    medium: 'Média',
     low: 'Baixa',
 };
 export const COOKIE_TYPE_LABELS = {
-    necessary: 'Necessario',
-    analytics: 'Analitico',
+    necessary: 'Necessário',
+    analytics: 'Analítico',
     functional: 'Funcional',
     marketing: 'Marketing',
 };

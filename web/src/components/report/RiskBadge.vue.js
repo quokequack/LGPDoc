@@ -1,9 +1,9 @@
 import Badge from '@/components/ui/Badge.vue';
 const props = defineProps();
 const config = {
-    good: { label: 'Boas Praticas', variant: 'default' },
+    good: { label: 'Boas Práticas', variant: 'default' },
     low: { label: 'Risco Baixo', variant: 'secondary' },
-    medium: { label: 'Risco Medio', variant: 'outline' },
+    medium: { label: 'Risco Médio', variant: 'outline' },
     high: { label: 'Risco Alto', variant: 'destructive' },
 };
 const c = config[props.riskLevel] || { label: props.riskLevel, variant: 'outline' };

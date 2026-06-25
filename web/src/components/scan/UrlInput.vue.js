@@ -4,10 +4,10 @@ import Input from '@/components/ui/Input.vue';
 import Button from '@/components/ui/Button.vue';
 import { cn } from '@/lib/utils';
 import { DEMO_SCAN_URL } from '@/mock/scans';
-const { url, urlError, isSubmitting, validateUrl, submitScan } = useScan();
+const { url, urlError, isSubmitting, válidateUrl, submitScan } = useScan();
 const localUrl = ref('');
 watch(localUrl, (v) => { if (v)
-    validateUrl(v);
+    válidateUrl(v);
 else
     urlError.value = null; });
 function handleSubmit() { url.value = localUrl.value; submitScan(); }

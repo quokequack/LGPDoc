@@ -7,10 +7,10 @@ import { cn } from '@/lib/utils';
 import { Globe, AlertCircle } from '@lucide/vue';
 import { DEMO_SCAN_URL, DEMO_SITE_NAME } from '@/mock/scans';
 
-const { url, urlError, isSubmitting, validateUrl, submitScan } = useScan();
+const { url, urlError, isSubmitting, válidateUrl, submitScan } = useScan();
 const localUrl = ref('');
 
-watch(localUrl, (v) => { if (v) validateUrl(v); else urlError.value = null; });
+watch(localUrl, (v) => { if (v) válidateUrl(v); else urlError.value = null; });
 
 function handleSubmit() { url.value = localUrl.value; submitScan(); }
 function handleDemoSubmit() {
