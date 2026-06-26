@@ -1,80 +1,33 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { onUnmounted, ref, watch } from 'vue';
+import Input from '@/components/ui/Input.vue';
+import { Search, X } from '@lucide/vue';
 
-const emit = defineEmits<{
-  search: [query: string];
-}>();
-
+const emit = defineEmits<{ search: [query: string] }>();
 const query = ref('');
-let debounceTimer: ReturnType<typeof setTimeout> | null = null;
+let timer: ReturnType<typeof setTimeout> | null = null;
 
-watch(query, (val) => {
-  if (debounceTimer) clearTimeout(debounceTimer);
-  debounceTimer = setTimeout(() => {
-    emit('search', val.trim());
-  }, 300);
+watch(query, (v) => {
+  if (timer) clearTimeout(timer);
+  timer = setTimeout(() => emit('search', v.trim()), 300);
+});
+
+onUnmounted(() => {
+  if (timer) clearTimeout(timer);
 });
 </script>
 
 <template>
-  <div class="glossary-search">
-    <label for="glossary-search-input" class="sr-only">Buscar termo no glossario</label>
-    <input
-      id="glossary-search-input"
-      v-model="query"
-      type="search"
-      placeholder="Buscar termo... (ex: consentimento, titular, dado pessoal)"
-      class="search-input"
-      aria-label="Buscar no glossario"
-    />
-    <span v-if="query" class="clear-btn" role="button" tabindex="0" @click="query = ''; emit('search', '')" @keydown.enter="query = ''; emit('search', '')" aria-label="Limpar busca">
-      &times;
-    </span>
+  <div class="relative w-full max-w-xl">
+    <Search class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+    <Input v-model="query" type="search" placeholder="Buscar termo… ex.: consentimento, anonimização" class="pl-10 pr-9" aria-label="Buscar no glossário" />
+    <button
+      v-if="query"
+      class="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground transition-colors hover:text-foreground"
+      @click="query = ''; emit('search', '')"
+      aria-label="Limpar busca"
+    >
+      <X class="h-4 w-4" />
+    </button>
   </div>
 </template>
-
-<style scoped>
-.glossary-search {
-  position: relative;
-  max-width: 560px;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-}
-
-.search-input {
-  width: 100%;
-  padding: 12px 40px 12px 16px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: 1rem;
-  font-family: var(--font-sans);
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.search-input:focus {
-  border-color: var(--color-primary);
-}
-
-.clear-btn {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  cursor: pointer;
-  color: var(--color-text-secondary);
-  font-size: 1.3rem;
-  line-height: 1;
-}
-
-.clear-btn:hover {
-  color: var(--color-text);
-}
-</style>

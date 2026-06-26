@@ -15,14 +15,36 @@ const router = createRouter({
       component: () => import('@/views/ScanProgressView.vue'),
     },
     {
+      path: '/resultado',
+      name: 'resultado',
+      component: () => import('@/views/ResultadoView.vue'),
+    },
+    {
+      path: '/resultado/categoria/:category',
+      name: 'category-detail',
+      component: () => import('@/views/CategoryDetailView.vue'),
+    },
+    {
+      path: '/resultado/:id',
+      redirect: { name: 'resultado' },
+    },
+    {
+      path: '/resultado/:id/categoria/:category',
+      redirect: (to) => ({
+        name: 'category-detail',
+        params: { category: to.params.category },
+      }),
+    },
+    {
       path: '/report/:id',
-      name: 'report',
-      component: () => import('@/views/ReportView.vue'),
+      redirect: { name: 'resultado' },
     },
     {
       path: '/report/:id/category/:category',
-      name: 'category-detail',
-      component: () => import('@/views/CategoryDetailView.vue'),
+      redirect: (to) => ({
+        name: 'category-detail',
+        params: { category: to.params.category },
+      }),
     },
     {
       path: '/glossary',

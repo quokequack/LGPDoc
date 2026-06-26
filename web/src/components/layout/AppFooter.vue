@@ -1,37 +1,20 @@
 <script setup lang="ts">
-import LegalDisclaimer from './LegalDisclaimer.vue';
+const year = new Date().getFullYear();
 </script>
 
 <template>
-  <footer class="app-footer" role="contentinfo">
-    <div class="footer-inner">
-      <LegalDisclaimer />
-      <p class="footer-copy">
-        &copy; {{ new Date().getFullYear() }} Scanner LGPD Educacional — Prototipo educacional.
+  <footer class="mt-16 border-t border-border">
+    <div class="mx-auto flex max-w-laudo flex-col gap-3 px-4 py-8 sm:flex-row sm:items-center sm:justify-between sm:px-6">
+      <div class="flex items-center gap-2.5">
+        <span class="grid h-7 w-7 place-items-center rounded-sm bg-primary font-serif text-base leading-none text-accent">§</span>
+        <p class="font-mono text-xs text-muted-foreground">
+          LGPDoc · protótipo educacional · {{ year }}
+        </p>
+      </div>
+      <p class="max-w-sm text-xs leading-relaxed text-muted-foreground">
+        Baseado na Lei nº 13.709/2018 (LGPD). Analisa apenas informações públicas; não armazena
+        dados pessoais dos sites avaliados.
       </p>
     </div>
   </footer>
 </template>
-
-<style scoped>
-.app-footer {
-  background: var(--color-surface);
-  border-top: 1px solid var(--color-border);
-  margin-top: 48px;
-  padding: 24px 16px;
-}
-
-.footer-inner {
-  max-width: 960px;
-  margin: 0 auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.footer-copy {
-  color: var(--color-text-secondary);
-  font-size: 0.8rem;
-  text-align: center;
-}
-</style>

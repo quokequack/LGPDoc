@@ -1,20 +1,15 @@
-import { ref, onMounted, onUnmounted } from 'vue';
+import { onUnmounted } from 'vue';
+import { storeToRefs } from 'pinia';
 import { useReportStore } from '@/stores/report.store';
+import { DEMO_SCAN_URL } from '@/mock/scans';
 
-export function useReport(scanId: string) {
-  const reportStore = useReportStore();
+export function useReport() {
+  const store = useReportStore();
+  const { report, isLoading, error } = storeToRefs(store);
 
-  onMounted(async () => {
-    await reportStore.fetchReport(scanId);
-  });
+  store.fetchReport('resultado-demo', DEMO_SCAN_URL);
 
-  onUnmounted(() => {
-    reportStore.reset();
-  });
+  onUnmounted(() => { store.reset(); });
 
-  return {
-    report: reportStore.report,
-    isLoading: reportStore.isLoading,
-    error: reportStore.error,
-  };
+  return { report, isLoading, error };
 }

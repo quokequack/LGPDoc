@@ -1,126 +1,62 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue';
+import { ref, watch, computed } from 'vue';
 import { useScan } from '@/composables/useScan';
+import Input from '@/components/ui/Input.vue';
+import Button from '@/components/ui/Button.vue';
+import { cn } from '@/lib/utils';
+import { Globe, AlertCircle } from '@lucide/vue';
+import { DEMO_SCAN_URL, DEMO_SITE_NAME } from '@/mock/scans';
 
-const { url, urlError, isSubmitting, validateUrl, submitScan } = useScan();
-
+const { url, urlError, isSubmitting, válidateUrl, submitScan } = useScan();
 const localUrl = ref('');
 
-watch(() => localUrl.value, (val) => {
-  if (val) validateUrl(val);
-  else urlError.value = null;
-});
+watch(localUrl, (v) => { if (v) válidateUrl(v); else urlError.value = null; });
 
-function handleSubmit() {
-  url.value = localUrl.value;
+function handleSubmit() { url.value = localUrl.value; submitScan(); }
+function handleDemoSubmit() {
+  localUrl.value = DEMO_SCAN_URL;
+  url.value = DEMO_SCAN_URL;
   submitScan();
 }
+
+const inputClass = computed(() => cn('h-12 pl-10 text-base', urlError.value && 'border-destructive focus-visible:border-destructive'));
 </script>
 
 <template>
-  <form class="url-input" @submit.prevent="handleSubmit">
-    <div class="input-group">
-      <label for="scan-url" class="sr-only">URL do site para analisar</label>
-      <input
-        id="scan-url"
-        v-model="localUrl"
-        type="text"
-        placeholder="https://exemplo.com.br"
-        class="url-field"
-        :class="{ 'url-field--error': urlError }"
-        :disabled="isSubmitting"
-        aria-describedby="url-error"
-        autocomplete="url"
-        enterkeyhint="go"
-      />
-      <button
-        type="submit"
-        class="url-submit"
-        :disabled="isSubmitting || !localUrl.trim()"
-      >
-        {{ isSubmitting ? 'Analisando...' : 'Analisar' }}
-      </button>
+  <form class="w-full space-y-3" @submit.prevent="handleSubmit">
+    <label for="scan-url" class="eyebrow block">Endereço do site</label>
+    <div class="flex flex-col gap-2.5 sm:flex-row">
+      <div class="relative flex-1">
+        <Globe class="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden="true" />
+        <Input
+          id="scan-url"
+          v-model="localUrl"
+          type="text"
+          :placeholder="DEMO_SCAN_URL"
+          :disabled="isSubmitting"
+          aria-label="URL do site para analisar"
+          :aria-invalid="!!urlError"
+          :class="inputClass"
+          @keyup.enter="handleSubmit"
+        />
+      </div>
+      <Button type="submit" size="lg" :disabled="isSubmitting || !localUrl.trim()" class="h-12 sm:w-44">
+        {{ isSubmitting ? 'Abrindo resultado…' : 'Analisar site' }}
+      </Button>
     </div>
-    <p
-      v-if="urlError"
-      id="url-error"
-      class="url-error"
-      role="alert"
-      aria-live="polite"
-    >
+
+    <p v-if="urlError" class="flex items-center gap-1.5 text-sm text-risk-high" role="alert">
+      <AlertCircle class="h-4 w-4 shrink-0" aria-hidden="true" />
       {{ urlError }}
     </p>
+
+    <button
+      type="button"
+      :disabled="isSubmitting"
+      class="text-sm font-medium text-primary underline-offset-4 transition hover:underline disabled:opacity-50"
+      @click="handleDemoSubmit"
+    >
+      Ver resultado mockado: {{ DEMO_SITE_NAME }} →
+    </button>
   </form>
 </template>
-
-<style scoped>
-.url-input {
-  width: 100%;
-}
-
-.input-group {
-  display: flex;
-  gap: 8px;
-}
-
-.sr-only {
-  position: absolute;
-  width: 1px;
-  height: 1px;
-  overflow: hidden;
-  clip: rect(0, 0, 0, 0);
-  white-space: nowrap;
-}
-
-.url-field {
-  flex: 1;
-  padding: 12px 16px;
-  border: 2px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-size: 1rem;
-  font-family: var(--font-sans);
-  outline: none;
-  transition: border-color 0.15s;
-}
-
-.url-field:focus {
-  border-color: var(--color-primary);
-}
-
-.url-field--error {
-  border-color: var(--color-danger);
-}
-
-.url-field:disabled {
-  background: var(--color-bg);
-  color: var(--color-text-secondary);
-}
-
-.url-submit {
-  padding: 12px 24px;
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  white-space: nowrap;
-  transition: background 0.15s;
-}
-
-.url-submit:hover:not(:disabled) {
-  background: var(--color-primary-dark);
-}
-
-.url-submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-.url-error {
-  color: var(--color-danger);
-  font-size: 0.85rem;
-  margin-top: 8px;
-}
-</style>

@@ -1,87 +1,37 @@
 <script setup lang="ts">
 import type { RecommendationItem } from '@/types/report.types';
 import { PRIORITY_LABELS } from '@/types/report.types';
+import Badge from '@/components/ui/Badge.vue';
+import { ArrowRight } from '@lucide/vue';
 
-defineProps<{
-  recommendations: RecommendationItem[];
-}>();
+defineProps<{ recommendations: RecommendationItem[] }>();
+
+const prioVariant: Record<string, 'high' | 'medium' | 'low'> = {
+  high: 'high', medium: 'medium', low: 'low',
+};
+const prioBorder: Record<string, string> = {
+  high: 'border-l-risk-high', medium: 'border-l-risk-medium', low: 'border-l-risk-low',
+};
 </script>
 
 <template>
-  <div class="recommendation-list">
-    <h5 class="rec-title">Recomendacoes de Melhoria</h5>
+  <div class="space-y-2.5 border-t border-dashed border-border pt-3">
+    <p class="eyebrow">Como corrigir</p>
     <div
       v-for="rec in recommendations"
       :key="rec.id"
-      class="rec-item"
-      :class="`rec-item--${rec.priority}`"
+      class="space-y-2 rounded-sm border-l-2 bg-muted/40 p-3.5 text-sm"
+      :class="prioBorder[rec.priority]"
     >
-      <div class="rec-header">
-        <strong>{{ rec.title }}</strong>
-        <span class="rec-priority" :class="`priority--${rec.priority}`">
-          {{ PRIORITY_LABELS[rec.priority] || rec.priority }}
-        </span>
+      <div class="flex flex-wrap items-center gap-2">
+        <strong class="font-display text-[0.9rem] font-semibold">{{ rec.title }}</strong>
+        <Badge :variant="prioVariant[rec.priority]">{{ PRIORITY_LABELS[rec.priority] || rec.priority }}</Badge>
       </div>
-      <p class="rec-description">{{ rec.description }}</p>
-      <div class="rec-how">
-        <strong>Como melhorar:</strong> {{ rec.howToImprove }}
-      </div>
+      <p class="prose-lei text-[0.85rem] leading-relaxed text-muted-foreground">{{ rec.description }}</p>
+      <p class="flex items-start gap-1.5 text-[0.85rem] leading-relaxed">
+        <ArrowRight class="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" aria-hidden="true" />
+        <span>{{ rec.howToImprove }}</span>
+      </p>
     </div>
   </div>
 </template>
-
-<style scoped>
-.recommendation-list {
-  margin-top: 12px;
-  border-top: 1px solid var(--color-border);
-  padding-top: 12px;
-}
-
-.rec-title {
-  font-size: 0.9rem;
-  margin-bottom: 8px;
-  color: var(--color-text);
-}
-
-.rec-item {
-  padding: 10px 12px;
-  border-radius: var(--radius-sm);
-  margin-bottom: 8px;
-  background: var(--color-bg);
-}
-
-.rec-item--high { border-left: 3px solid #d93025; }
-.rec-item--medium { border-left: 3px solid #e37400; }
-.rec-item--low { border-left: 3px solid #1a73e8; }
-
-.rec-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 4px;
-  font-size: 0.9rem;
-}
-
-.rec-priority {
-  font-size: 0.72rem;
-  font-weight: 600;
-  padding: 1px 6px;
-  border-radius: var(--radius-sm);
-}
-
-.priority--high { background: #fce8e6; color: #d93025; }
-.priority--medium { background: #fef7e0; color: #e37400; }
-.priority--low { background: #e8f0fe; color: #1a73e8; }
-
-.rec-description {
-  font-size: 0.84rem;
-  color: var(--color-text-secondary);
-  line-height: 1.4;
-  margin-bottom: 6px;
-}
-
-.rec-how {
-  font-size: 0.82rem;
-  line-height: 1.4;
-}
-</style>

@@ -1,0 +1,204 @@
+<script setup lang="ts">
+import { Download } from '@lucide/vue';
+import ScoreGauge from '@/components/report/ScoreGauge.vue';
+import RiskBadge from '@/components/report/RiskBadge.vue';
+import CategorySummary from '@/components/report/CategorySummary.vue';
+import FindingCard from '@/components/report/FindingCard.vue';
+import LegalDisclaimer from '@/components/layout/LegalDisclaimer.vue';
+import Button from '@/components/ui/Button.vue';
+import Badge from '@/components/ui/Badge.vue';
+import { CATEGORY_LABELS, COOKIE_TYPE_LABELS } from '@/types/report.types';
+import { getMockReport } from '@/mock/reports';
+import { DEMO_SCAN_URL } from '@/mock/scans';
+
+const report = getMockReport('resultado-demo', DEMO_SCAN_URL);
+
+const CATEGORY_ARTICLE: Record<string, string> = {
+  privacy_policy: 'Art. 6º · 9º',
+  cookies: 'Art. 7º · 8º',
+  forms: 'Art. 5º · 11',
+  rights: 'Art. 18',
+  controller: 'Art. 5º · 41',
+  security: 'Art. 46',
+  language: 'Art. 6º VI',
+};
+
+function fmtDate(d: string) {
+  return new Date(d).toLocaleDateString('pt-BR', {
+    day: '2-digit', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
+  });
+}
+
+function exportPdf() {
+  window.print();
+}
+</script>
+
+<template>
+  <div class="grid gap-8 lg:grid-cols-[18rem_1fr]">
+    <!-- Trilho do resultado: selo + índice de conformidade -->
+    <aside class="space-y-5 lg:sticky lg:top-20 lg:self-start no-print">
+      <div class="sheet flex flex-col items-center gap-3 p-6">
+        <ScoreGauge :score="report.scan.score" :risk-level="report.scan.riskLevel" size="lg" />
+        <RiskBadge :risk-level="report.scan.riskLevel" />
+      </div>
+      <div class="sheet space-y-4 p-5">
+        <p class="eyebrow">Síntese por categoria</p>
+        <CategorySummary :categories="report.categories" />
+      </div>
+    </aside>
+
+    <!-- Corpo do resultado -->
+    <div class="space-y-10">
+      <header class="space-y-2 border-b border-border pb-5">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div class="space-y-2">
+            <p class="eyebrow">Resultado demonstrativo · LGPD</p>
+            <h1 class="font-display text-3xl font-extrabold tracking-tight">{{ report.scan.siteName }}</h1>
+            <p class="prose-lei max-w-2xl text-sm leading-relaxed text-muted-foreground">{{ report.scan.siteSummary }}</p>
+            <a :href="report.scan.url" target="_blank" rel="noopener"
+               class="block break-all font-mono text-sm text-primary hover:underline">{{ report.scan.url }}</a>
+            <p class="font-mono text-xs text-muted-foreground">Emitido em {{ fmtDate(report.scan.completedAt) }}</p>
+          </div>
+          <Button class="no-print shrink-0" variant="outline" size="sm" @click="exportPdf">
+            <Download class="h-4 w-4" />
+            Exportar PDF
+          </Button>
+        </div>
+      </header>
+
+      <section class="grid gap-4 lg:grid-cols-2">
+        <article class="sheet space-y-3 p-5">
+          <p class="eyebrow">Como a pontuação é calculada</p>
+          <h2 class="font-display text-lg font-bold">Soma dos critérios, normalizada para 100</h2>
+          <p class="prose-lei text-sm leading-relaxed text-muted-foreground">
+            Cada frente reúne critérios com peso próprio. Um critério encontrado soma a pontuação
+            total daquele item; quando está parcial, entra com parte do valor; quando está ausente,
+            soma zero. O total das frentes é então convertido para uma escala de 0 a 100.
+          </p>
+          <div class="grid gap-2 sm:grid-cols-3">
+            <div class="sheet border-border/70 bg-muted/35 p-3">
+              <p class="eyebrow">Encontrado</p>
+              <p class="mt-2 text-sm text-muted-foreground">Pontuação integral do critério.</p>
+            </div>
+            <div class="sheet border-border/70 bg-muted/35 p-3">
+              <p class="eyebrow">Parcial</p>
+              <p class="mt-2 text-sm text-muted-foreground">Cobertura incompleta, com ajuste proporcional.</p>
+            </div>
+            <div class="sheet border-border/70 bg-muted/35 p-3">
+              <p class="eyebrow">Ausente</p>
+              <p class="mt-2 text-sm text-muted-foreground">Sem evidência detectada na análise.</p>
+            </div>
+          </div>
+        </article>
+
+        <article class="sheet space-y-3 p-5">
+          <p class="eyebrow">Por que isso importa</p>
+          <h2 class="font-display text-lg font-bold">Conformidade reduz risco e aumenta confiança</h2>
+          <p class="prose-lei text-sm leading-relaxed text-muted-foreground">
+            Um site alinhado à LGPD deixa claro o que coleta, por que coleta e com quem compartilha.
+            Isso reduz risco jurídico, melhora governança e facilita a resposta a titulares e auditorias.
+          </p>
+          <p class="prose-lei text-sm leading-relaxed text-muted-foreground">
+            Na prática, a conformidade ajuda a evitar vazamentos de confiança: o visitante encontra
+            informação útil, os responsáveis sabem onde corrigir e a operação passa a trabalhar com
+            mais previsibilidade.
+          </p>
+        </article>
+      </section>
+
+      <section class="sheet space-y-3 p-5">
+        <div class="flex flex-wrap items-baseline justify-between gap-3">
+          <h2 class="font-display text-lg font-bold">Escopo analisado</h2>
+          <span class="eyebrow">{{ report.scan.detectedPages.length }} páginas mockadas</span>
+        </div>
+        <div class="flex flex-wrap gap-2">
+          <Badge v-for="page in report.scan.detectedPages" :key="page" variant="outline">
+            {{ page.replace(report.scan.url, '') || '/' }}
+          </Badge>
+        </div>
+        <p class="prose-lei text-xs leading-relaxed text-muted-foreground">
+          Este cenário fictício combina política de privacidade, cookies, formulários de agendamento,
+          área de paciente e newsletter para demonstrar as principais capacidades da ferramenta.
+        </p>
+      </section>
+
+      <LegalDisclaimer class="no-print" />
+
+      <section v-for="cat in report.categories" :key="cat.category" :id="`cat-${cat.category}`" class="scroll-mt-20 space-y-4">
+        <header class="space-y-1.5">
+          <div class="flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            <h2 class="font-display text-xl font-bold">{{ CATEGORY_LABELS[cat.category] || cat.category }}</h2>
+            <span class="font-mono text-xs text-accent">{{ CATEGORY_ARTICLE[cat.category] }}</span>
+            <Badge variant="outline" class="ml-auto">{{ cat.percentage }}% · {{ cat.score.toFixed(1) }}/{{ cat.maxScore }}</Badge>
+          </div>
+          <p class="prose-lei text-sm leading-relaxed text-muted-foreground">{{ cat.summary }}</p>
+        </header>
+        <div class="space-y-3">
+          <FindingCard v-for="(f, i) in cat.findings" :key="f.id" :finding="f" :index="i" />
+        </div>
+      </section>
+
+      <!-- Cookies -->
+      <section v-if="report.cookies.length" class="space-y-4">
+        <header class="flex flex-wrap items-baseline gap-x-3 border-b border-border pb-2">
+          <h2 class="font-display text-xl font-bold">Cookies detectados</h2>
+          <span class="font-mono text-xs text-accent">Art. 7º · 8º</span>
+        </header>
+        <div class="sheet overflow-x-auto">
+          <table class="w-full text-left text-sm">
+            <thead>
+              <tr class="border-b border-border bg-muted/50 font-mono text-[0.65rem] uppercase tracking-[0.08em] text-muted-foreground">
+                <th class="px-4 py-2.5 font-medium">Nome</th>
+                <th class="px-4 py-2.5 font-medium">Domínio</th>
+                <th class="px-4 py-2.5 font-medium">Tipo</th>
+                <th class="px-4 py-2.5 font-medium">Origem</th>
+                <th class="px-4 py-2.5 font-medium">Antes do consentimento</th>
+              </tr>
+            </thead>
+            <tbody class="divide-y divide-border">
+              <tr v-for="c in report.cookies" :key="c.id" class="transition-colors hover:bg-muted/40">
+                <td class="px-4 py-3 font-mono text-xs">{{ c.name }}</td>
+                <td class="px-4 py-3 text-xs text-muted-foreground">{{ c.domain }}</td>
+                <td class="px-4 py-3"><Badge variant="outline">{{ COOKIE_TYPE_LABELS[c.type] || c.type }}</Badge></td>
+                <td class="px-4 py-3 text-xs">{{ c.origin === 'first_party' ? 'Próprio' : 'Terceiro' }}</td>
+                <td class="px-4 py-3">
+                  <Badge :variant="c.loadedBeforeConsent ? 'high' : 'good'">
+                    {{ c.loadedBeforeConsent ? 'Sim' : 'Não' }}
+                  </Badge>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Formulários -->
+      <section v-if="report.forms.length" class="space-y-4">
+        <header class="flex flex-wrap items-baseline gap-x-3 border-b border-border pb-2">
+          <h2 class="font-display text-xl font-bold">Formulários</h2>
+          <span class="font-mono text-xs text-accent">Art. 5º · 11</span>
+        </header>
+        <div class="sheet space-y-3 p-5 text-sm" v-for="form in report.forms" :key="form.id">
+          <p class="break-all font-mono text-xs text-muted-foreground">{{ form.pageUrl }}</p>
+          <div class="flex flex-wrap gap-2">
+            <Badge :variant="form.hasSecureAction ? 'good' : 'high'">HTTPS · {{ form.hasSecureAction ? 'Sim' : 'Não' }}</Badge>
+            <Badge :variant="form.privacyNotice ? 'good' : 'medium'">Aviso de privacidade · {{ form.privacyNotice ? 'Presente' : 'Ausente' }}</Badge>
+          </div>
+          <ul v-if="form.fields.length" class="flex flex-wrap gap-2">
+            <li v-for="(f, i) in form.fields" :key="i"
+                class="inline-flex items-center gap-1.5 rounded-sm border border-border px-2 py-1 text-xs">
+              {{ f.label || f.name }}
+              <Badge v-if="f.isSensitive" variant="high">Sensível</Badge>
+              <Badge v-else-if="f.isPersonalData" variant="default">Pessoal</Badge>
+            </li>
+          </ul>
+          <p v-if="form.excessiveFields.length" class="tarja rounded-sm bg-muted/50 p-3 text-xs leading-relaxed">
+            <strong class="text-risk-medium">Campos possivelmente excessivos:</strong> {{ form.excessiveFields.join(', ') }}
+          </p>
+        </div>
+      </section>
+
+    </div>
+  </div>
+</template>

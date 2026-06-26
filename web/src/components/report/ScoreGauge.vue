@@ -1,89 +1,97 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, useId } from 'vue';
+import type { RiskLevel } from '@/types/scan.types';
 
-const props = defineProps<{
-  score: number;
-  size?: 'sm' | 'md' | 'lg';
-}>();
+const props = withDefaults(
+  defineProps<{
+    score: number;
+    riskLevel?: RiskLevel | null;
+    size?: 'sm' | 'md' | 'lg';
+    animate?: boolean;
+  }>(),
+  { size: 'md', animate: true, riskLevel: null },
+);
 
-const radius = props.size === 'sm' ? 36 : props.size === 'lg' ? 56 : 44;
-const strokeWidth = props.size === 'sm' ? 4 : 5;
-const circumference = 2 * Math.PI * radius;
-const offset = computed(() => circumference - (props.score / 100) * circumference);
+const px = { sm: 96, md: 140, lg: 196 };
 
-const color = computed(() => {
-  if (props.score >= 90) return '#188038';
-  if (props.score >= 70) return '#1a73e8';
-  if (props.score >= 40) return '#e37400';
-  return '#d93025';
+const uid = useId();
+const pathId = `selo-ring-${uid}`;
+
+// raio da textPath e seu perímetro (para forçar o preenchimento exato do anel)
+const TR = 84;
+const ringLen = 2 * Math.PI * TR;
+
+const ringText = 'AVALIAÇÃO EDUCATIVA ✦ NÃO SUBSTITUI PARECER JURÍDICO ✦ ';
+
+const verdict = computed(() => {
+  switch (props.riskLevel) {
+    case 'good': return 'BOAS PRÁTICAS';
+    case 'low': return 'RISCO BAIXO';
+    case 'medium': return 'RISCO MÉDIO';
+    case 'high': return 'RISCO ALTO';
+    default:
+      return props.score >= 80 ? 'BOAS PRÁTICAS'
+        : props.score >= 60 ? 'RISCO BAIXO'
+        : props.score >= 40 ? 'RISCO MÉDIO' : 'RISCO ALTO';
+  }
 });
+
+const inkVar = computed(() => {
+  const level = props.riskLevel
+    ?? (props.score >= 80 ? 'good' : props.score >= 60 ? 'low' : props.score >= 40 ? 'medium' : 'high');
+  return `var(--risk-${level})`;
+});
+
+const scoreLabel = computed(() => Math.round(props.score).toString());
 </script>
 
 <template>
   <div
-    class="score-gauge"
-    :class="`score-gauge--${size || 'md'}`"
+    class="selo-press relative inline-grid place-items-center"
+    :class="animate ? 'animate-stamp' : '-rotate-[4deg]'"
+    :style="{ width: `${px[size]}px`, height: `${px[size]}px`, color: `hsl(${inkVar})` }"
     role="meter"
-    :aria-valuenow="score"
+    :aria-valuenow="Math.round(score)"
     aria-valuemin="0"
     aria-valuemax="100"
-    :aria-label="`Pontuacao: ${score} de 100`"
+    :aria-label="`Pontuação ${scoreLabel} de 100 — ${verdict}. Avaliação educativa, não substitui parecer jurídico.`"
   >
-    <svg :width="(radius + strokeWidth) * 2" :height="(radius + strokeWidth) * 2" viewBox="0 0 120 120">
-      <circle
-        cx="60"
-        cy="60"
-        :r="radius"
-        fill="none"
-        stroke="var(--color-border)"
-        :stroke-width="strokeWidth"
-      />
-      <circle
-        cx="60"
-        cy="60"
-        :r="radius"
-        fill="none"
-        :stroke="color"
-        :stroke-width="strokeWidth"
-        :stroke-dasharray="circumference"
-        :stroke-dashoffset="offset"
-        stroke-linecap="round"
-        transform="rotate(-90 60 60)"
-        style="transition: stroke-dashoffset 0.8s ease;"
-      />
+    <svg viewBox="0 0 200 200" class="absolute inset-0 h-full w-full" aria-hidden="true">
+      <defs>
+        <path
+          :id="pathId"
+          :d="`M 100,100 m -${TR},0 a ${TR},${TR} 0 1,1 ${TR * 2},0 a ${TR},${TR} 0 1,1 -${TR * 2},0`"
+          fill="none"
+        />
+      </defs>
+      <circle cx="100" cy="100" r="97" fill="none" stroke="currentColor" stroke-width="1.5" opacity="0.9" />
+      <circle cx="100" cy="100" r="71" fill="none" stroke="currentColor" stroke-width="1" opacity="0.55" />
+      <text
+        fill="currentColor"
+        :font-size="9.5"
+        letter-spacing="1.5"
+        style="font-family: 'IBM Plex Mono', monospace; font-weight: 500;"
+      >
+        <textPath
+          :href="`#${pathId}`"
+          startOffset="0"
+          :textLength="ringLen"
+          lengthAdjust="spacing"
+        >{{ ringText }}</textPath>
+      </text>
     </svg>
-    <div class="gauge-value" :style="{ color }">
-      <span class="gauge-score">{{ Math.round(score) }}</span>
-      <span class="gauge-max">/100</span>
+
+    <div class="flex flex-col items-center justify-center leading-none">
+      <span class="font-mono text-[0.55rem] tracking-[0.18em] opacity-70">PONTUAÇÃO</span>
+      <span class="font-display font-extrabold tabular-nums" :class="size === 'lg' ? 'text-6xl' : size === 'sm' ? 'text-3xl' : 'text-5xl'">
+        {{ scoreLabel }}
+      </span>
+      <span class="font-mono text-[0.6rem] tracking-[0.12em] opacity-60">/ 100</span>
+      <span
+        class="mt-1.5 border-t pt-1 font-mono font-semibold tracking-[0.1em]"
+        :class="size === 'sm' ? 'text-[0.5rem]' : 'text-[0.62rem]'"
+        :style="{ borderColor: 'currentColor' }"
+      >{{ verdict }}</span>
     </div>
   </div>
 </template>
-
-<style scoped>
-.score-gauge {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.gauge-value {
-  position: absolute;
-  display: flex;
-  align-items: baseline;
-  gap: 2px;
-}
-
-.gauge-score {
-  font-weight: 700;
-}
-
-.gauge-max {
-  font-size: 0.65em;
-  opacity: 0.6;
-}
-
-.score-gauge--sm .gauge-score { font-size: 1.1rem; }
-.score-gauge--md .gauge-score { font-size: 1.5rem; }
-.score-gauge--lg .gauge-score { font-size: 2rem; }
-</style>

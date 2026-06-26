@@ -1,55 +1,18 @@
-export enum ScanStatus {
-  PENDING = 'pending',
-  RUNNING = 'running',
-  COMPLETED = 'completed',
-  FAILED = 'failed',
-}
+export type ScanStatus = 'pending' | 'running' | 'completed' | 'failed';
 
-export enum RiskLevel {
-  HIGH = 'high',
-  MEDIUM = 'medium',
-  LOW = 'low',
-  GOOD = 'good',
-}
+export type RiskLevel = 'high' | 'medium' | 'low' | 'good';
 
-export enum FindingStatus {
-  FOUND = 'found',
-  PARTIAL = 'partial',
-  ABSENT = 'absent',
-}
+export type FindingStatus = 'found' | 'partial' | 'absent';
 
-export enum Priority {
-  HIGH = 'high',
-  MEDIUM = 'medium',
-  LOW = 'low',
-}
+export type Priority = 'high' | 'medium' | 'low';
 
-export enum CookieType {
-  NECESSARY = 'necessary',
-  ANALYTICS = 'analytics',
-  FUNCTIONAL = 'functional',
-  MARKETING = 'marketing',
-}
+export type CookieType = 'necessary' | 'analytics' | 'functional' | 'marketing';
 
-export enum CookieOrigin {
-  FIRST_PARTY = 'first_party',
-  THIRD_PARTY = 'third_party',
-}
+export type CookieOrigin = 'first_party' | 'third_party';
 
-export enum CookieDuration {
-  SESSION = 'session',
-  PERSISTENT = 'persistent',
-}
+export type CookieDuration = 'session' | 'persistent';
 
-export enum ScanCategory {
-  PRIVACY_POLICY = 'privacy_policy',
-  COOKIES = 'cookies',
-  FORMS = 'forms',
-  RIGHTS = 'rights',
-  CONTROLLER = 'controller',
-  SECURITY = 'security',
-  LANGUAGE = 'language',
-}
+export type ScanCategory = 'privacy_policy' | 'cookies' | 'forms' | 'rights' | 'controller' | 'security' | 'language';
 
 export interface ScanResponse {
   id: string;

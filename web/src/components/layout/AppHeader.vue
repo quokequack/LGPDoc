@@ -1,95 +1,52 @@
 <script setup lang="ts">
 import { RouterLink } from 'vue-router';
+import { useTheme } from '@/composables/useTheme';
+import { ShieldCheck, Sun, Moon } from '@lucide/vue';
+import Button from '@/components/ui/Button.vue';
+
+const { isDark, toggle } = useTheme();
+
+const nav = [
+  { to: '/', label: 'Início' },
+  { to: '/glossary', label: 'Glossário' },
+  { to: '/history', label: 'Histórico' },
+];
 </script>
 
 <template>
-  <header class="app-header" role="banner">
-    <div class="header-inner">
-      <RouterLink to="/" class="header-logo" aria-label="Ir para pagina inicial">
-        <span class="logo-icon">&#9733;</span>
-        <span class="logo-text">Scanner LGPD Educacional</span>
+  <header class="sticky top-0 z-50 w-full border-b border-border bg-background/85 backdrop-blur supports-[backdrop-filter]:bg-background/70">
+    <div class="mx-auto flex min-h-16 max-w-laudo items-center justify-between gap-4 px-4 sm:px-6">
+      <RouterLink to="/" class="group flex items-center gap-3 no-underline" aria-label="LGPDoc, página inicial">
+        <span class="grid h-9 w-9 place-items-center rounded-sm border border-border bg-card text-primary shadow-sm transition-transform group-hover:-translate-y-0.5">
+          <ShieldCheck class="h-4 w-4" aria-hidden="true" />
+        </span>
+        <span class="flex flex-col leading-none">
+          <span class="font-display text-lg font-extrabold tracking-tight text-foreground">LGPDoc</span>
+          <span class="font-mono text-[0.6rem] uppercase tracking-[0.18em] text-muted-foreground">Laudo educacional</span>
+        </span>
       </RouterLink>
-      <nav class="header-nav" aria-label="Navegacao principal">
-        <RouterLink to="/" class="nav-link" active-class="nav-link--active">
-          Inicio
+
+      <nav class="flex items-center gap-1 sm:gap-2" aria-label="Navegação principal">
+        <RouterLink
+          v-for="item in nav"
+          :key="item.to"
+          :to="item.to"
+          class="border-b-2 border-transparent px-2.5 py-3 text-sm font-medium text-muted-foreground no-underline transition-colors hover:text-foreground sm:px-3"
+          exact-active-class="!border-accent !text-foreground"
+        >
+          {{ item.label }}
         </RouterLink>
-        <RouterLink to="/glossary" class="nav-link" active-class="nav-link--active">
-          Glossario
-        </RouterLink>
-        <RouterLink to="/history" class="nav-link" active-class="nav-link--active">
-          Historico
-        </RouterLink>
+        <span class="mx-1 h-5 w-px bg-border" aria-hidden="true" />
+        <Button
+          variant="ghost"
+          size="icon"
+          @click="toggle"
+          :aria-label="isDark ? 'Mudar para tema claro' : 'Mudar para tema escuro'"
+        >
+          <Sun v-if="isDark" class="h-4 w-4" />
+          <Moon v-else class="h-4 w-4" />
+        </Button>
       </nav>
     </div>
   </header>
 </template>
-
-<style scoped>
-.app-header {
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-  position: sticky;
-  top: 0;
-  z-index: 100;
-}
-
-.header-inner {
-  max-width: 960px;
-  margin: 0 auto;
-  padding: 0 16px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 56px;
-}
-
-.header-logo {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  text-decoration: none;
-  color: var(--color-text);
-  font-weight: 600;
-  font-size: 1.1rem;
-}
-
-.logo-icon {
-  color: var(--color-primary);
-  font-size: 1.3rem;
-}
-
-.header-nav {
-  display: flex;
-  gap: 4px;
-}
-
-.nav-link {
-  padding: 8px 16px;
-  text-decoration: none;
-  color: var(--color-text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  border-radius: var(--radius-sm);
-  transition: color 0.15s, background 0.15s;
-}
-
-.nav-link:hover {
-  color: var(--color-text);
-  background: var(--color-bg);
-}
-
-.nav-link--active {
-  color: var(--color-primary);
-  background: rgba(26, 115, 232, 0.08);
-}
-
-@media (max-width: 600px) {
-  .header-inner {
-    flex-direction: column;
-    height: auto;
-    padding: 12px 16px;
-    gap: 8px;
-  }
-}
-</style>
