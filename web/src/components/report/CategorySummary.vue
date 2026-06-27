@@ -13,7 +13,7 @@ function tone(pct: number) {
 <template>
   <div>
     <div class="space-y-3.5">
-      <div v-for="cat in categories" :key="cat.category" class="grid grid-cols-[1.25rem_1fr_auto] items-center gap-x-3 gap-y-1.5">
+      <div v-for="cat in categories" :key="cat.category" class="grid min-w-0 grid-cols-[1.25rem_minmax(0,1fr)_auto] items-center gap-x-3 gap-y-1.5">
         <span
           class="grid h-5 w-5 place-items-center rounded-sm"
           :class="{
@@ -26,7 +26,7 @@ function tone(pct: number) {
           <Minus v-else-if="tone(cat.percentage) === 'medium'" class="h-3 w-3" />
           <X v-else class="h-3 w-3" />
         </span>
-        <span class="text-sm font-medium">{{ CATEGORY_LABELS[cat.category] || cat.category }}</span>
+        <span class="min-w-0 text-sm font-medium">{{ CATEGORY_LABELS[cat.category] || cat.category }}</span>
         <span class="font-mono text-xs tabular-nums text-muted-foreground">{{ cat.percentage }}%</span>
 
         <div class="col-start-2 col-end-4 h-1 overflow-hidden rounded-full bg-muted">
