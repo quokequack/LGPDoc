@@ -35,9 +35,9 @@ function exportPdf() {
 </script>
 
 <template>
-  <div class="grid gap-8 lg:grid-cols-[18rem_1fr]">
+  <div class="grid min-w-0 gap-8 lg:grid-cols-[18rem_1fr]">
     <!-- Trilho do resultado: selo + índice de conformidade -->
-    <aside class="space-y-5 lg:sticky lg:top-20 lg:self-start no-print">
+    <aside class="min-w-0 space-y-5 lg:sticky lg:top-20 lg:self-start no-print">
       <div class="sheet flex flex-col items-center gap-3 p-6">
         <ScoreGauge :score="report.scan.score" :risk-level="report.scan.riskLevel" size="lg" />
         <RiskBadge :risk-level="report.scan.riskLevel" />
@@ -49,12 +49,12 @@ function exportPdf() {
     </aside>
 
     <!-- Corpo do resultado -->
-    <div class="space-y-10">
+    <div class="min-w-0 space-y-10">
       <header class="space-y-2 border-b border-border pb-5">
         <div class="flex flex-wrap items-start justify-between gap-4">
           <div class="space-y-2">
             <p class="eyebrow">Resultado demonstrativo · LGPD</p>
-            <h1 class="font-display text-3xl font-extrabold tracking-tight">{{ report.scan.siteName }}</h1>
+            <h1 class="break-words font-display text-3xl font-extrabold tracking-tight">{{ report.scan.siteName }}</h1>
             <p class="prose-lei max-w-2xl text-sm leading-relaxed text-muted-foreground">{{ report.scan.siteSummary }}</p>
             <a :href="report.scan.url" target="_blank" rel="noopener"
                class="block break-all font-mono text-sm text-primary hover:underline">{{ report.scan.url }}</a>
@@ -68,7 +68,7 @@ function exportPdf() {
       </header>
 
       <section class="grid gap-4 lg:grid-cols-2">
-        <article class="sheet space-y-3 p-5">
+        <article class="sheet print-avoid space-y-3 p-5">
           <p class="eyebrow">Como a pontuação é calculada</p>
           <h2 class="font-display text-lg font-bold">Soma dos critérios, normalizada para 100</h2>
           <p class="prose-lei text-sm leading-relaxed text-muted-foreground">
@@ -76,23 +76,23 @@ function exportPdf() {
             total daquele item; quando está parcial, entra com parte do valor; quando está ausente,
             soma zero. O total das frentes é então convertido para uma escala de 0 a 100.
           </p>
-          <div class="grid gap-2 sm:grid-cols-3">
-            <div class="sheet border-border/70 bg-muted/35 p-3">
+          <div class="grid gap-2 sm:grid-cols-3 lg:grid-cols-1">
+            <div class="sheet border-border/70 bg-muted/35 p-3 sm:min-w-0">
               <p class="eyebrow">Encontrado</p>
               <p class="mt-2 text-sm text-muted-foreground">Pontuação integral do critério.</p>
             </div>
-            <div class="sheet border-border/70 bg-muted/35 p-3">
+            <div class="sheet border-border/70 bg-muted/35 p-3 sm:min-w-0">
               <p class="eyebrow">Parcial</p>
               <p class="mt-2 text-sm text-muted-foreground">Cobertura incompleta, com ajuste proporcional.</p>
             </div>
-            <div class="sheet border-border/70 bg-muted/35 p-3">
+            <div class="sheet border-border/70 bg-muted/35 p-3 sm:min-w-0">
               <p class="eyebrow">Ausente</p>
               <p class="mt-2 text-sm text-muted-foreground">Sem evidência detectada na análise.</p>
             </div>
           </div>
         </article>
 
-        <article class="sheet space-y-3 p-5">
+        <article class="sheet print-avoid space-y-3 p-5">
           <p class="eyebrow">Por que isso importa</p>
           <h2 class="font-display text-lg font-bold">Conformidade reduz risco e aumenta confiança</h2>
           <p class="prose-lei text-sm leading-relaxed text-muted-foreground">
@@ -107,7 +107,7 @@ function exportPdf() {
         </article>
       </section>
 
-      <section class="sheet space-y-3 p-5">
+      <section class="sheet print-avoid space-y-3 p-5">
         <div class="flex flex-wrap items-baseline justify-between gap-3">
           <h2 class="font-display text-lg font-bold">Escopo analisado</h2>
           <span class="eyebrow">{{ report.scan.detectedPages.length }} páginas mockadas</span>

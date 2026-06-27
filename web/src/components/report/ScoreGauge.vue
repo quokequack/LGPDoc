@@ -49,7 +49,7 @@ const scoreLabel = computed(() => Math.round(props.score).toString());
   <div
     class="selo-press relative inline-grid place-items-center"
     :class="animate ? 'animate-stamp' : '-rotate-[4deg]'"
-    :style="{ width: `${px[size]}px`, height: `${px[size]}px`, color: `hsl(${inkVar})` }"
+    :style="{ width: `${px[size]}px`, height: `${px[size]}px`, maxWidth: '100%', color: `hsl(${inkVar})` }"
     role="meter"
     :aria-valuenow="Math.round(score)"
     aria-valuemin="0"
